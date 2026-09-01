@@ -1,0 +1,13 @@
+- user=local
+- gpus=1
+- use_caching=false
+- model.training.input_ego_speed=true
+- model.training.max_epochs=5
+- model.training.batch_size=128
+- model.training.num_workers=4
+- model.training.augment=false
+- model.training.augment_parked=false
+- model.training.input_representation=exact
+- model.training.exclude_towns=[Town05]
+- model.pre_training.forecastLoss_weight=0
+- expname=exact_holdout

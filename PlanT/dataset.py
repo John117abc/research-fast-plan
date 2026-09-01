@@ -15,6 +15,7 @@ import glob
 
 from plant_variables import PlanTVariables
 from util.static_extents import CAR_EXTENTS, STATIC_EXTENTS
+from relation_features import relationize_exact_row
 
 from scipy.spatial import cKDTree
 
@@ -83,7 +84,53 @@ class PlanTDataset(Dataset):
 
         label_raw_path_all = [p[:-5] for p in label_raw_path_all]
 
-        label_raw_path = label_raw_path_all # Could filter here if needed
+        label_raw_path = label_raw_path_all
+
+        include_towns = set(self.cfg_train.get("include_towns", []))
+        exclude_towns = set(self.cfg_train.get("exclude_towns", []))
+        include_scenarios = set(self.cfg_train.get("include_scenarios", []))
+        exclude_scenarios = set(self.cfg_train.get("exclude_scenarios", []))
+
+
+        def _route_town(route_dir):
+            # 当前 PlanT 数据代码本身也用 route folder 名称第一个 '_' 前的字段识别 Town
+            return Path(route_dir).name.split("_")[0]
+
+
+        def _route_scenario(route_dir):
+            # 官方数据目录父目录即 scenario type
+            return Path(route_dir).parent.name
+
+
+        if include_towns:
+            label_raw_path = [
+                p for p in label_raw_path
+                if _route_town(p) in include_towns
+            ]
+
+        if exclude_towns:
+            label_raw_path = [
+                p for p in label_raw_path
+                if _route_town(p) not in exclude_towns
+            ]
+
+        if include_scenarios:
+            label_raw_path = [
+                p for p in label_raw_path
+                if _route_scenario(p) in include_scenarios
+            ]
+
+        if exclude_scenarios:
+            label_raw_path = [
+                p for p in label_raw_path
+                if _route_scenario(p) not in exclude_scenarios
+            ]
+
+        print("Include towns:", include_towns)
+        print("Exclude towns:", exclude_towns)
+        print("Include scenarios:", include_scenarios)
+        print("Exclude scenarios:", exclude_scenarios)
+        print("Routes after split filter:", len(label_raw_path))
 
         logging.info(f"Found {len(label_raw_path)} results jsons.")
 
@@ -122,16 +169,21 @@ class PlanTDataset(Dataset):
                 log_file = root.rstrip("/")[:-4]+"/slurm/run_files/logs/"+log_file
 
                 silentcrash = False
-                with open(log_file, "r", encoding="utf8") as f:
-                    lines = f.readlines()
-                for line in lines:
-                    if "SKIPPED" in line:
-                        vehicle = line.split(" ")[-1].strip()
-                        
-                        if vehicle[:6] != "walker" and vehicle not in ["vehicle.bh.crossbike", "vehicle.diamondback.century", "vehicle.gazelle.omafiets"]:
-                            silentcrash = True
-                            print(line)
-                            break
+                try:
+                    with open(log_file, "r", encoding="utf8") as f:
+                        lines = f.readlines()
+                    for line in lines:
+                        if "SKIPPED" in line:
+                            vehicle = line.split(" ")[-1].strip()
+                            
+                            if vehicle[:6] != "walker" and vehicle not in ["vehicle.bh.crossbike", "vehicle.diamondback.century", "vehicle.gazelle.omafiets"]:
+                                silentcrash = True
+                                print(line)
+                                break
+                except FileNotFoundError:
+                    # Public PlanT2_Dataset zip does not ship the cluster
+                    # slurm/run_files/logs dir; skip the silent-crash check.
+                    pass
                 
                 if silentcrash:
                     continue
@@ -250,6 +302,7 @@ class PlanTDataset(Dataset):
 
         sample["target_speed"] = loaded_measurements[self.cfg_train.seq_len - 1]["target_speed"]
         sample["ego_speed"] = loaded_measurements[self.cfg_train.seq_len - 1]["speed"]
+        sample["input_ego_speed"] = sample["ego_speed"]
 
         speed_limit = loaded_measurements[self.cfg_train.seq_len - 1]["speed_limit"]
         speed_limit = round(speed_limit*3.6) # TODO
@@ -389,6 +442,25 @@ class PlanTDataset(Dataset):
 
         sample["output_floating"] = output_objects_matched
         sample["output"] = output_objects_quantized
+
+        # ------------------------------------------------------------
+        # Relation pilot: only transform planner INPUT after the original
+        # forecasting target matching has already used exact-state objects.
+        # ------------------------------------------------------------
+        if self.cfg_train.get("input_representation", "exact") == "relation":
+            ego_obj = labels_data_all[0]
+
+            if "extent" not in ego_obj:
+                raise RuntimeError("Ego object has no extent; cannot build relation features.")
+
+            input_objects = [
+                relationize_exact_row(
+                    row,
+                    ego_speed_mps=sample["ego_speed"],
+                    ego_extent=ego_obj["extent"],
+                )
+                for row in input_objects
+            ]
 
         # remove id 
         input_objects = [x[:-1] for x in input_objects]

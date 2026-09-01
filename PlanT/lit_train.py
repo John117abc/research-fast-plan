@@ -95,7 +95,10 @@ def main(cfg):
         every_n_epochs=10,
         save_on_train_epoch_end=True
     )
-    checkpoint_callback.CHECKPOINT_NAME_LAST = f"last_{seed}"
+    if addon := os.environ.get("CHECKPOINT_ADDON"):
+        checkpoint_callback.CHECKPOINT_NAME_LAST = f"last_{addon}_{seed}"
+    else:
+        checkpoint_callback.CHECKPOINT_NAME_LAST = f"last_{seed}"
 
     dataset = PlanTDataset(os.environ.get('DS')+"/data", cfg, shared_dict=shared_dict)
 

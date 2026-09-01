@@ -24,6 +24,7 @@ from birds_eye_view.chauffeurnet import ObsManager
 from longitudinal_controller import LongitudinalLinearRegressionController
 from plant_variables import PlanTVariables
 from util.static_extents import STATIC_EXTENTS, CAR_EXTENTS
+from relation_features import relationize_exact_row
 
 def get_entry_point():
     return 'PlanTAgent'
@@ -60,6 +61,11 @@ class PlanTAgent(DataAgent):
         self.input_range = self.cfg_net["model"]["training"].get("range", False)
         self.input_range_factor_front = self.cfg_net["model"]["training"].get("range_factor_front", False)
 
+        self.input_representation = self.cfg_net["model"]["training"].get(
+            "input_representation", "exact"
+        )
+
+        print("Input representation:", self.input_representation)
         print(f"BEV: {self.input_bev}, Static: {self.input_static_cars}")
         print(f"Range: {self.input_range}, front factor: {self.input_range_factor_front}")
         print(f'Loading model from {LOAD_CKPT_PATH}')
@@ -450,12 +456,30 @@ class PlanTAgent(DataAgent):
             if x["class"].lower() not in car_types and x["class"].lower() in type_nums.keys() and (not x["class"].lower()=="traffic_light" or x["state"] in ["Red", "Yellow"])
         ] 
 
+        if self.input_representation == "relation":
+            if len(label_raw) == 0:
+                raise RuntimeError("No CARLA bounding-box data available.")
+
+            ego_obj = label_raw[0]
+            if "extent" not in ego_obj:
+                raise RuntimeError("Ego bounding box has no extent.")
+
+            data_car = [
+                relationize_exact_row(
+                    row,
+                    ego_speed_mps=input_data["speed"],
+                    ego_extent=ego_obj["extent"],
+                )
+                for row in data_car
+            ]
+
         features = data_car
 
         sample['input'] = features
         sample["route_original"] = input_data["route"]
         sample["speed_limit"] = input_data["speed_limit"]
         sample["ego_speed"] = input_data["speed"]
+        sample["input_ego_speed"] = input_data["speed"]
 
         if self.input_bev:
             sample["BEV"] = input_data["BEV"]

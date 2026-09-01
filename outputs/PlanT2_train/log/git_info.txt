@@ -1,0 +1,247 @@
+Run started at: 01/09/2026 10:55:22
+Git state: 6269e5a43c6f6b984d2bd97e3ec4a025ebefbeef
+Git commit: commit 6269e5a43c6f6b984d2bd97e3ec4a025ebefbeef
+Author: SimonGer <73387983+SimonGer@users.noreply.github.com>
+Date:   Wed Apr 22 10:36:13 2026 +0200
+
+    Update README.md
+Git branch: main
+* relation-pilot
+
+diff --git a/PlanT/PlanT_agent.py b/PlanT/PlanT_agent.py
+index 2326078..acab177 100644
+--- a/PlanT/PlanT_agent.py
++++ b/PlanT/PlanT_agent.py
+@@ -24,6 +24,7 @@ from birds_eye_view.chauffeurnet import ObsManager
+ from longitudinal_controller import LongitudinalLinearRegressionController
+ from plant_variables import PlanTVariables
+ from util.static_extents import STATIC_EXTENTS, CAR_EXTENTS
++from relation_features import relationize_exact_row
+ 
+ def get_entry_point():
+     return 'PlanTAgent'
+@@ -60,6 +61,11 @@ class PlanTAgent(DataAgent):
+         self.input_range = self.cfg_net["model"]["training"].get("range", False)
+         self.input_range_factor_front = self.cfg_net["model"]["training"].get("range_factor_front", False)
+ 
++        self.input_representation = self.cfg_net["model"]["training"].get(
++            "input_representation", "exact"
++        )
++
++        print("Input representation:", self.input_representation)
+         print(f"BEV: {self.input_bev}, Static: {self.input_static_cars}")
+         print(f"Range: {self.input_range}, front factor: {self.input_range_factor_front}")
+         print(f'Loading model from {LOAD_CKPT_PATH}')
+@@ -450,12 +456,30 @@ class PlanTAgent(DataAgent):
+             if x["class"].lower() not in car_types and x["class"].lower() in type_nums.keys() and (not x["class"].lower()=="traffic_light" or x["state"] in ["Red", "Yellow"])
+         ] 
+ 
++        if self.input_representation == "relation":
++            if len(label_raw) == 0:
++                raise RuntimeError("No CARLA bounding-box data available.")
++
++            ego_obj = label_raw[0]
++            if "extent" not in ego_obj:
++                raise RuntimeError("Ego bounding box has no extent.")
++
++            data_car = [
++                relationize_exact_row(
++                    row,
++                    ego_speed_mps=input_data["speed"],
++                    ego_extent=ego_obj["extent"],
++                )
++                for row in data_car
++            ]
++
+         features = data_car
+ 
+         sample['input'] = features
+         sample["route_original"] = input_data["route"]
+         sample["speed_limit"] = input_data["speed_limit"]
+         sample["ego_speed"] = input_data["speed"]
++        sample["input_ego_speed"] = input_data["speed"]
+ 
+         if self.input_bev:
+             sample["BEV"] = input_data["BEV"]
+diff --git a/PlanT/config/model/PlanT.yaml b/PlanT/config/model/PlanT.yaml
+index 9bcbbca..e2b1d6e 100644
+--- a/PlanT/config/model/PlanT.yaml
++++ b/PlanT/config/model/PlanT.yaml
+@@ -21,6 +21,16 @@ training:
+   input_bev: True
+   input_static_cars: True
+ 
++  input_representation: exact
++
++  # 第一阶段：地图域 holdout
++  exclude_towns: []
++  include_towns: []
++
++  # 第二阶段预留：场景类型 holdout
++  exclude_scenarios: []
++  include_scenarios: []
++
+   max_epochs: 30
+   batch_size: 128
+   learning_rate: 1e-4 # 1e-4
+diff --git a/PlanT/dataset.py b/PlanT/dataset.py
+index 7c11812..c7f5d7c 100644
+--- a/PlanT/dataset.py
++++ b/PlanT/dataset.py
+@@ -15,6 +15,7 @@ import glob
+ 
+ from plant_variables import PlanTVariables
+ from util.static_extents import CAR_EXTENTS, STATIC_EXTENTS
++from relation_features import relationize_exact_row
+ 
+ from scipy.spatial import cKDTree
+ 
+@@ -83,7 +84,53 @@ class PlanTDataset(Dataset):
+ 
+         label_raw_path_all = [p[:-5] for p in label_raw_path_all]
+ 
+-        label_raw_path = label_raw_path_all # Could filter here if needed
++        label_raw_path = label_raw_path_all
++
++        include_towns = set(self.cfg_train.get("include_towns", []))
++        exclude_towns = set(self.cfg_train.get("exclude_towns", []))
++        include_scenarios = set(self.cfg_train.get("include_scenarios", []))
++        exclude_scenarios = set(self.cfg_train.get("exclude_scenarios", []))
++
++
++        def _route_town(route_dir):
++            # 当前 PlanT 数据代码本身也用 route folder 名称第一个 '_' 前的字段识别 Town
++            return Path(route_dir).name.split("_")[0]
++
++
++        def _route_scenario(route_dir):
++            # 官方数据目录父目录即 scenario type
++            return Path(route_dir).parent.name
++
++
++        if include_towns:
++            label_raw_path = [
++                p for p in label_raw_path
++                if _route_town(p) in include_towns
++            ]
++
++        if exclude_towns:
++            label_raw_path = [
++                p for p in label_raw_path
++                if _route_town(p) not in exclude_towns
++            ]
++
++        if include_scenarios:
++            label_raw_path = [
++                p for p in label_raw_path
++                if _route_scenario(p) in include_scenarios
++            ]
++
++        if exclude_scenarios:
++            label_raw_path = [
++                p for p in label_raw_path
++                if _route_scenario(p) not in exclude_scenarios
++            ]
++
++        print("Include towns:", include_towns)
++        print("Exclude towns:", exclude_towns)
++        print("Include scenarios:", include_scenarios)
++        print("Exclude scenarios:", exclude_scenarios)
++        print("Routes after split filter:", len(label_raw_path))
+ 
+         logging.info(f"Found {len(label_raw_path)} results jsons.")
+ 
+@@ -122,16 +169,21 @@ class PlanTDataset(Dataset):
+                 log_file = root.rstrip("/")[:-4]+"/slurm/run_files/logs/"+log_file
+ 
+                 silentcrash = False
+-                with open(log_file, "r", encoding="utf8") as f:
+-                    lines = f.readlines()
+-                for line in lines:
+-                    if "SKIPPED" in line:
+-                        vehicle = line.split(" ")[-1].strip()
+-                        
+-                        if vehicle[:6] != "walker" and vehicle not in ["vehicle.bh.crossbike", "vehicle.diamondback.century", "vehicle.gazelle.omafiets"]:
+-                            silentcrash = True
+-                            print(line)
+-                            break
++                try:
++                    with open(log_file, "r", encoding="utf8") as f:
++                        lines = f.readlines()
++                    for line in lines:
++                        if "SKIPPED" in line:
++                            vehicle = line.split(" ")[-1].strip()
++                            
++                            if vehicle[:6] != "walker" and vehicle not in ["vehicle.bh.crossbike", "vehicle.diamondback.century", "vehicle.gazelle.omafiets"]:
++                                silentcrash = True
++                                print(line)
++                                break
++                except FileNotFoundError:
++                    # Public PlanT2_Dataset zip does not ship the cluster
++                    # slurm/run_files/logs dir; skip the silent-crash check.
++                    pass
+                 
+                 if silentcrash:
+                     continue
+@@ -250,6 +302,7 @@ class PlanTDataset(Dataset):
+ 
+         sample["target_speed"] = loaded_measurements[self.cfg_train.seq_len - 1]["target_speed"]
+         sample["ego_speed"] = loaded_measurements[self.cfg_train.seq_len - 1]["speed"]
++        sample["input_ego_speed"] = sample["ego_speed"]
+ 
+         speed_limit = loaded_measurements[self.cfg_train.seq_len - 1]["speed_limit"]
+         speed_limit = round(speed_limit*3.6) # TODO
+@@ -390,6 +443,25 @@ class PlanTDataset(Dataset):
+         sample["output_floating"] = output_objects_matched
+         sample["output"] = output_objects_quantized
+ 
++        # ------------------------------------------------------------
++        # Relation pilot: only transform planner INPUT after the original
++        # forecasting target matching has already used exact-state objects.
++        # ------------------------------------------------------------
++        if self.cfg_train.get("input_representation", "exact") == "relation":
++            ego_obj = labels_data_all[0]
++
++            if "extent" not in ego_obj:
++                raise RuntimeError("Ego object has no extent; cannot build relation features.")
++
++            input_objects = [
++                relationize_exact_row(
++                    row,
++                    ego_speed_mps=sample["ego_speed"],
++                    ego_extent=ego_obj["extent"],
++                )
++                for row in input_objects
++            ]
++
+         # remove id 
+         input_objects = [x[:-1] for x in input_objects]
+ 
+diff --git a/PlanT/lit_train.py b/PlanT/lit_train.py
+index 59653cf..1fd8657 100644
+--- a/PlanT/lit_train.py
++++ b/PlanT/lit_train.py
+@@ -95,7 +95,10 @@ def main(cfg):
+         every_n_epochs=10,
+         save_on_train_epoch_end=True
+     )
+-    checkpoint_callback.CHECKPOINT_NAME_LAST = f"last_{seed}"
++    if addon := os.environ.get("CHECKPOINT_ADDON"):
++        checkpoint_callback.CHECKPOINT_NAME_LAST = f"last_{addon}_{seed}"
++    else:
++        checkpoint_callback.CHECKPOINT_NAME_LAST = f"last_{seed}"
+ 
+     dataset = PlanTDataset(os.environ.get('DS')+"/data", cfg, shared_dict=shared_dict)
+ 
+diff --git a/environment.yml b/environment.yml
+index ae55e90..2151d24 100644
+--- a/environment.yml
++++ b/environment.yml
+@@ -4,6 +4,7 @@ channels:
+   - defaults
+   - https://repo.anaconda.com/pkgs/main
+   - https://repo.anaconda.com/pkgs/r
++  
+ dependencies:
+   - _libgcc_mutex=0.1=main
+   - _openmp_mutex=5.1=1_gnu

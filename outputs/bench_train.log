@@ -1,0 +1,20 @@
+BertSdpaSelfAttention is used but `torch.nn.functional.scaled_dot_product_attention` does not support non-absolute `position_embedding_type` or `output_attentions=True` or `head_mask`. Falling back to the manual attention implementation, but specifying the manual implementation will be required from Transformers version v5.0.0 onwards. This warning can be removed using the argument `attn_implementation="eager"` when loading the model.
+/home/jiangchengxuan/anaconda3/envs/plant2/lib/python3.10/site-packages/pytorch_lightning/core/module.py:441: You are trying to `self.log()` but the `self.trainer` reference is not registered on the model yet. This is most likely because the model hasn't been passed to the `Trainer`
+
+Include towns: set()
+Exclude towns: {'Town05'}
+Include scenarios: set()
+Exclude scenarios: set()
+Routes after split filter: 4968
+Loading 470639 samples
+Total amount of routes: 4968
+Skipped routes: 21
+Trainable routes: 4654
+dataset init: 91.1s, len=470639
+data loading: 12 batches in 4.42s -> 2.72 batch/s (348 samples/s)
+compute (fwd+bwd+step): 8 iters in 10.85s -> 0.74 iter/s (94 samples/s)
+
+steps/epoch=3676 len=470639
+estimate per epoch (compute-bound): 4983s = 83.1 min
+estimate for 5 epochs: 415.3 min = 6.92 h
+

@@ -1,0 +1,25 @@
+2026-08-31 22:11:41,265 INFO    MainThread:227117 [wandb_setup.py:_flush():67] Current SDK version is 0.19.8
+2026-08-31 22:11:41,265 INFO    MainThread:227117 [wandb_setup.py:_flush():67] Configure stats pid to 227117
+2026-08-31 22:11:41,265 INFO    MainThread:227117 [wandb_setup.py:_flush():67] Loading settings from /home/jiangchengxuan/.config/wandb/settings
+2026-08-31 22:11:41,265 INFO    MainThread:227117 [wandb_setup.py:_flush():67] Loading settings from /home/jiangchengxuan/PycharmProjects/research-safe-drive/plant2/outputs/PlanT2_train/wandb/settings
+2026-08-31 22:11:41,265 INFO    MainThread:227117 [wandb_setup.py:_flush():67] Loading settings from environment variables
+2026-08-31 22:11:41,265 INFO    MainThread:227117 [wandb_init.py:setup_run_log_directory():647] Logging user logs to /home/jiangchengxuan/PycharmProjects/research-safe-drive/plant2/outputs/PlanT2_train/wandb/offline-run-20260831_221141-mem8ti1u/logs/debug.log
+2026-08-31 22:11:41,265 INFO    MainThread:227117 [wandb_init.py:setup_run_log_directory():648] Logging internal logs to /home/jiangchengxuan/PycharmProjects/research-safe-drive/plant2/outputs/PlanT2_train/wandb/offline-run-20260831_221141-mem8ti1u/logs/debug-internal.log
+2026-08-31 22:11:41,265 INFO    MainThread:227117 [wandb_init.py:init():761] calling init triggers
+2026-08-31 22:11:41,265 INFO    MainThread:227117 [wandb_init.py:init():766] wandb.init called with sweep_config: {}
+config: {'_wandb': {}}
+2026-08-31 22:11:41,265 INFO    MainThread:227117 [wandb_init.py:init():784] starting backend
+2026-08-31 22:11:41,471 INFO    MainThread:227117 [wandb_init.py:init():788] sending inform_init request
+2026-08-31 22:11:41,476 INFO    MainThread:227117 [backend.py:_multiprocessing_setup():101] multiprocessing start_methods=fork,spawn,forkserver, using: spawn
+2026-08-31 22:11:41,477 INFO    MainThread:227117 [wandb_init.py:init():798] backend started and connected
+2026-08-31 22:11:41,479 INFO    MainThread:227117 [wandb_init.py:init():891] updated telemetry
+2026-08-31 22:11:41,484 INFO    MainThread:227117 [wandb_init.py:init():915] communicating run to backend with 90.0 second timeout
+2026-08-31 22:11:41,610 INFO    MainThread:227117 [wandb_init.py:init():990] starting run threads in backend
+2026-08-31 22:11:41,775 INFO    MainThread:227117 [wandb_run.py:_console_start():2375] atexit reg
+2026-08-31 22:11:41,775 INFO    MainThread:227117 [wandb_run.py:_redirect():2227] redirect: wrap_raw
+2026-08-31 22:11:41,775 INFO    MainThread:227117 [wandb_run.py:_redirect():2292] Wrapping output streams.
+2026-08-31 22:11:41,775 INFO    MainThread:227117 [wandb_run.py:_redirect():2315] Redirects installed.
+2026-08-31 22:11:41,777 INFO    MainThread:227117 [wandb_init.py:init():1032] run started, returning control to user process
+2026-08-31 22:13:28,242 INFO    MainThread:227117 [wandb_watch.py:_watch():71] Watching
+2026-08-31 22:13:28,521 INFO    MainThread:227117 [wandb_run.py:_config_callback():1261] config_cb None None {'cfg': "{'user': {'working_dir': '/home/jiangchengxuan/PycharmProjects/research-safe-drive/plant2'}, 'model': {'name': 'PlanT', 'waypoints': {'representation': 'path+wps', 'generator': 'linear', 'path_len': 20, 'wps_len': 8, 'bins_speed': 8, 'path_weight': 5, 'wps_weight': 1, 'speed_weight': 1, 'gru_hidden_size': 64}, 'training': {'range': 50, 'range_factor_front': 2, 'input_ego_speed': True, 'input_bev': True, 'input_static_cars': True, 'input_representation': 'relation', 'exclude_towns': [], 'include_towns': [], 'max_epochs': 1, 'batch_size': 8, 'learning_rate': 0.0001, 'betas': [0.9, 0.95], 'grad_norm_clip': 1.0, 'weight_decay': 0.1, 'log_path': 'log/', 'num_workers': 2, 'seq_len': 1, 'augment': False, 'augment_parked': False}, 'pre_training': {'forecastLoss_weight': 0, 'future_timestep': 1, 'quantize': True, 'precision_pos': 7, 'precision_speed': 5, 'precision_angle': 5}, 'network': {'hf_checkpoint': 'prajjwal1/bert-medium', 'use_dropout': True, 'embd_pdrop': 0.1}}, 'exp_folder_name': 'PlanT2_train', 'lrDecay_epoch': 29, 'debug': False, 'visualize': False, 'overfit': 5, 'resume': True, 'resume_path': '', 'use_caching': False, 'custom_sampler': False, 'gpus': 1, 'expname': 'relation_smoke', 'wandb_name': 'training_PlanT_${hydra:job.override_dirname}', 'save_dir': '${hydra:run.dir}', 'data_dir': '/home/simon/PlanT_2_cleanup/PlanT_2_2025_07_24/data'}"}
+2026-08-31 22:13:32,272 INFO    MsgRouterThr:227117 [mailbox.py:close():129] Closing mailbox, abandoning 0 handles.

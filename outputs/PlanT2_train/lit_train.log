@@ -1,0 +1,20 @@
+[2026-08-31 22:09:09,911][root][INFO] - Found 5562 results jsons.
+[2026-08-31 22:11:01,799][timm.models._builder][INFO] - Loading pretrained weights from Hugging Face hub (timm/resnet18.a1_in1k)
+[2026-08-31 22:11:02,417][timm.models._hub][INFO] - [timm/resnet18.a1_in1k] Safe alternative available for 'pytorch_model.bin' (as 'model.safetensors'). Loading weights using safetensors.
+[2026-08-31 22:11:02,457][timm.models._builder][INFO] - Missing keys (fc.weight, fc.bias) discovered while loading pretrained weights. This is expected if model is being adapted.
+[2026-08-31 22:11:02,608][model][INFO] - number of parameters: 3.718496e+07
+[2026-08-31 22:11:43,433][root][INFO] - Found 5562 results jsons.
+[2026-08-31 22:13:27,484][timm.models._builder][INFO] - Loading pretrained weights from Hugging Face hub (timm/resnet18.a1_in1k)
+[2026-08-31 22:13:28,092][timm.models._hub][INFO] - [timm/resnet18.a1_in1k] Safe alternative available for 'pytorch_model.bin' (as 'model.safetensors'). Loading weights using safetensors.
+[2026-08-31 22:13:28,107][timm.models._builder][INFO] - Missing keys (fc.weight, fc.bias) discovered while loading pretrained weights. This is expected if model is being adapted.
+[2026-08-31 22:13:28,238][model][INFO] - number of parameters: 3.718496e+07
+[2026-09-01 10:55:31,617][root][INFO] - Found 4968 results jsons.
+[2026-09-01 10:55:31,631][root][INFO] - Found 4968 results jsons.
+[2026-09-01 10:57:30,275][timm.models._builder][INFO] - Loading pretrained weights from Hugging Face hub (timm/resnet18.a1_in1k)
+[2026-09-01 10:57:30,325][timm.models._builder][INFO] - Loading pretrained weights from Hugging Face hub (timm/resnet18.a1_in1k)
+[2026-09-01 10:57:40,289][timm.models._hub][INFO] - [timm/resnet18.a1_in1k] Safe alternative available for 'pytorch_model.bin' (as 'model.safetensors'). Loading weights using safetensors.
+[2026-09-01 10:57:40,334][timm.models._builder][INFO] - Missing keys (fc.weight, fc.bias) discovered while loading pretrained weights. This is expected if model is being adapted.
+[2026-09-01 10:57:40,338][timm.models._hub][INFO] - [timm/resnet18.a1_in1k] Safe alternative available for 'pytorch_model.bin' (as 'model.safetensors'). Loading weights using safetensors.
+[2026-09-01 10:57:40,346][timm.models._builder][INFO] - Missing keys (fc.weight, fc.bias) discovered while loading pretrained weights. This is expected if model is being adapted.
+[2026-09-01 10:57:40,474][model][INFO] - number of parameters: 3.718496e+07
+[2026-09-01 10:57:40,477][model][INFO] - number of parameters: 3.718496e+07

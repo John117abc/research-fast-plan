@@ -21,6 +21,16 @@ training:
   input_bev: True
   input_static_cars: True
 
+  input_representation: exact
+
+  # 第一阶段：地图域 holdout
+  exclude_towns: []
+  include_towns: []
+
+  # 第二阶段预留：场景类型 holdout
+  exclude_scenarios: []
+  include_scenarios: []
+
   max_epochs: 30
   batch_size: 128
   learning_rate: 1e-4 # 1e-4
