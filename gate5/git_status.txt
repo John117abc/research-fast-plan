@@ -1,0 +1,111 @@
+位于分支 relation-pilot
+您的分支与上游分支 'origin/relation-pilot' 一致。
+
+尚未暂存以备提交的变更：
+  （使用 "git add <文件>..." 更新要提交的内容）
+  （使用 "git restore <文件>..." 丢弃工作区的改动）
+	修改：     PlanT/PlanT_agent.py
+	修改：     PlanT/config/model/PlanT.yaml
+	修改：     PlanT/dataset.py
+	修改：     PlanT/relation_features.py
+	修改：     outputs/PlanT2_train/exact_holdout/2026-09-01_10-58-38/log/CSVLogger/version_0/metrics.csv
+	修改：     outputs/PlanT2_train/exact_holdout/2026-09-01_10-58-38/log/TBLogger/version_0/events.out.tfevents.1788231645.jiangchengxuan-Workstation.74348.0
+	修改：     outputs/PlanT2_train/exact_holdout/2026-09-01_10-58-38/wandb/offline-run-20260901_105838-ncvqd96i/logs/debug-internal.log
+	修改：     outputs/PlanT2_train/exact_holdout/2026-09-01_10-58-38/wandb/offline-run-20260901_105838-ncvqd96i/logs/debug.log
+	修改：     outputs/PlanT2_train/exact_holdout/2026-09-01_10-58-38/wandb/offline-run-20260901_105838-ncvqd96i/run-ncvqd96i.wandb
+	修改：     outputs/PlanT2_train/relation_holdout/2026-09-01_10-58-38/log/CSVLogger/version_0/metrics.csv
+	修改：     outputs/PlanT2_train/relation_holdout/2026-09-01_10-58-38/log/TBLogger/version_0/events.out.tfevents.1788231645.jiangchengxuan-Workstation.74341.0
+	修改：     outputs/PlanT2_train/relation_holdout/2026-09-01_10-58-38/wandb/offline-run-20260901_105838-fq328r6m/logs/debug-internal.log
+	修改：     outputs/PlanT2_train/relation_holdout/2026-09-01_10-58-38/wandb/offline-run-20260901_105838-fq328r6m/logs/debug.log
+	修改：     outputs/PlanT2_train/relation_holdout/2026-09-01_10-58-38/wandb/offline-run-20260901_105838-fq328r6m/run-fq328r6m.wandb
+	修改：     outputs/train_exact.log
+	修改：     outputs/train_relation.log
+
+未跟踪的文件:
+  （使用 "git add <文件>..." 以包含要提交的内容）
+	docs/
+	gate5/
+	outputs/PlanT2_train/exact_nostop_holdout/
+	outputs/PlanT2_train/exact_nostop_smoke/
+	outputs/PlanT2_train/relation_nostop_holdout/
+	outputs/PlanT2_train/relation_nostop_smoke/
+	outputs/eval_exact_basic.log
+	outputs/eval_ood_exact_route24.log
+	outputs/eval_ood_exact_route25.log
+	outputs/eval_ood_exact_route26.log
+	outputs/eval_ood_exact_route27.log
+	outputs/eval_ood_exact_route28.log
+	outputs/eval_ood_exact_route29.log
+	outputs/eval_ood_relation_route24.log
+	outputs/eval_ood_relation_route25.log
+	outputs/eval_ood_relation_route26.log
+	outputs/eval_ood_relation_route27.log
+	outputs/eval_ood_relation_route28.log
+	outputs/eval_ood_relation_route29.log
+	outputs/eval_relation_basic.log
+	outputs/exact_basic.json
+	outputs/gate4.log
+	outputs/gate4.log.bak
+	outputs/gate45a/
+	outputs/gate45a_exact_route25.json
+	outputs/gate45a_exact_route25.log
+	outputs/gate45a_exact_route28.json
+	outputs/gate45a_exact_route28.log
+	outputs/gate45a_relation_route25.json
+	outputs/gate45a_relation_route25.log
+	outputs/gate45a_relation_route28.json
+	outputs/gate45a_relation_route28.log
+	outputs/gate45a_run.log
+	outputs/gate45b/
+	outputs/gate45b_relation_runA_maskOFF.json
+	outputs/gate45b_relation_runA_maskOFF.log
+	outputs/gate45b_relation_runB_maskON.json
+	outputs/gate45b_relation_runB_maskON.log
+	outputs/gate45b_run.log
+	outputs/gate45c/
+	outputs/gate45c_relation_runC0_dropOFF.json
+	outputs/gate45c_relation_runC0_dropOFF.log
+	outputs/gate45c_relation_runC1_dropON.json
+	outputs/gate45c_relation_runC1_dropON.log
+	outputs/gate45c_run.log
+	outputs/gate46/
+	outputs/gate46_eval_run.log
+	outputs/gate46_exact_nostop_route25.json
+	outputs/gate46_exact_nostop_route25.log
+	outputs/gate46_exact_nostop_route28.json
+	outputs/gate46_exact_nostop_route28.log
+	outputs/gate46_exact_nostop_route29.json
+	outputs/gate46_exact_nostop_route29.log
+	outputs/gate46_relation_nostop_route25.json
+	outputs/gate46_relation_nostop_route25.log
+	outputs/gate46_relation_nostop_route28.json
+	outputs/gate46_relation_nostop_route28.log
+	outputs/gate46_relation_nostop_route29.json
+	outputs/gate46_relation_nostop_route29.log
+	outputs/gate46_smoke_exact.log
+	outputs/gate46_smoke_relation.log
+	outputs/gate46_train_exact.log
+	outputs/gate46_train_relation.log
+	outputs/gate46_train_run.log
+	outputs/ood_exact_route24.json
+	outputs/ood_exact_route25.json
+	outputs/ood_exact_route26.json
+	outputs/ood_exact_route27.json
+	outputs/ood_exact_route28.json
+	outputs/ood_exact_route29.json
+	outputs/ood_relation_route24.json
+	outputs/ood_relation_route25.json
+	outputs/ood_relation_route26.json
+	outputs/ood_relation_route27.json
+	outputs/ood_relation_route28.json
+	outputs/ood_relation_route29.json
+	outputs/relation_basic.json
+	tools/scratch/run_gate4.sh
+	tools/scratch/run_gate45a.sh
+	tools/scratch/run_gate45b.sh
+	tools/scratch/run_gate45c.sh
+	tools/scratch/run_gate46_eval.sh
+	tools/scratch/run_gate46_train.sh
+	tools/scratch/run_gate4_parallel.sh
+
+修改尚未加入提交（使用 "git add" 和/或 "git commit -a"）

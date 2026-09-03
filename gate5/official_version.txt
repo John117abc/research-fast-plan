@@ -1,0 +1,147 @@
+# ============================================================
+# Gate 5 Step 1.1 - Official PlanT 2.0 Reference version info
+# generated: 2026-09-03 21:51:38 +0800
+# ============================================================
+
+## repo:
+origin	git@github.com:John117abc/research-fast-plan.git (fetch)
+origin	git@github.com:John117abc/research-fast-plan.git (push)
+upstream	https://github.com/autonomousvision/plant2.git (fetch)
+upstream	https://github.com/autonomousvision/plant2.git (push)
+
+## branch/tag:
+relation-pilot
+
+## commit hash:
+8b6f23cf7fbb765317f5dc661cd294930c7ea4b0
+
+## upstream (official base) commit:
+6269e5a43c6f6b984d2bd97e3ec4a025ebefbeef
+6269e5a43c6f6b984d2bd97e3ec4a025ebefbeef
+
+## merge-base(HEAD, upstream/main):
+6269e5a43c6f6b984d2bd97e3ec4a025ebefbeef
+
+## git log -1:
+commit 8b6f23cf7fbb765317f5dc661cd294930c7ea4b0
+author jiangchengxuan <j734688149@hotmail.com>
+date Tue Sep 1 11:56:44 2026 +0800
+subject Add relation-representation pilot: proxy relation features, town/scenario holdout filters, A/B training infra
+
+## git status:
+ M PlanT/PlanT_agent.py
+ M PlanT/config/model/PlanT.yaml
+ M PlanT/dataset.py
+ M PlanT/relation_features.py
+ M outputs/PlanT2_train/exact_holdout/2026-09-01_10-58-38/log/CSVLogger/version_0/metrics.csv
+ M outputs/PlanT2_train/exact_holdout/2026-09-01_10-58-38/log/TBLogger/version_0/events.out.tfevents.1788231645.jiangchengxuan-Workstation.74348.0
+ M outputs/PlanT2_train/exact_holdout/2026-09-01_10-58-38/wandb/offline-run-20260901_105838-ncvqd96i/logs/debug-internal.log
+ M outputs/PlanT2_train/exact_holdout/2026-09-01_10-58-38/wandb/offline-run-20260901_105838-ncvqd96i/logs/debug.log
+ M outputs/PlanT2_train/exact_holdout/2026-09-01_10-58-38/wandb/offline-run-20260901_105838-ncvqd96i/run-ncvqd96i.wandb
+ M outputs/PlanT2_train/relation_holdout/2026-09-01_10-58-38/log/CSVLogger/version_0/metrics.csv
+ M outputs/PlanT2_train/relation_holdout/2026-09-01_10-58-38/log/TBLogger/version_0/events.out.tfevents.1788231645.jiangchengxuan-Workstation.74341.0
+ M outputs/PlanT2_train/relation_holdout/2026-09-01_10-58-38/wandb/offline-run-20260901_105838-fq328r6m/logs/debug-internal.log
+ M outputs/PlanT2_train/relation_holdout/2026-09-01_10-58-38/wandb/offline-run-20260901_105838-fq328r6m/logs/debug.log
+ M outputs/PlanT2_train/relation_holdout/2026-09-01_10-58-38/wandb/offline-run-20260901_105838-fq328r6m/run-fq328r6m.wandb
+ M outputs/train_exact.log
+ M outputs/train_relation.log
+?? docs/
+?? gate5/
+?? outputs/PlanT2_train/exact_nostop_holdout/
+?? outputs/PlanT2_train/exact_nostop_smoke/
+?? outputs/PlanT2_train/relation_nostop_holdout/
+?? outputs/PlanT2_train/relation_nostop_smoke/
+?? outputs/eval_exact_basic.log
+?? outputs/eval_ood_exact_route24.log
+?? outputs/eval_ood_exact_route25.log
+?? outputs/eval_ood_exact_route26.log
+?? outputs/eval_ood_exact_route27.log
+?? outputs/eval_ood_exact_route28.log
+?? outputs/eval_ood_exact_route29.log
+?? outputs/eval_ood_relation_route24.log
+?? outputs/eval_ood_relation_route25.log
+?? outputs/eval_ood_relation_route26.log
+?? outputs/eval_ood_relation_route27.log
+?? outputs/eval_ood_relation_route28.log
+?? outputs/eval_ood_relation_route29.log
+?? outputs/eval_relation_basic.log
+?? outputs/exact_basic.json
+?? outputs/gate4.log
+?? outputs/gate4.log.bak
+?? outputs/gate45a/
+?? outputs/gate45a_exact_route25.json
+?? outputs/gate45a_exact_route25.log
+?? outputs/gate45a_exact_route28.json
+?? outputs/gate45a_exact_route28.log
+?? outputs/gate45a_relation_route25.json
+?? outputs/gate45a_relation_route25.log
+?? outputs/gate45a_relation_route28.json
+?? outputs/gate45a_relation_route28.log
+?? outputs/gate45a_run.log
+?? outputs/gate45b/
+?? outputs/gate45b_relation_runA_maskOFF.json
+?? outputs/gate45b_relation_runA_maskOFF.log
+?? outputs/gate45b_relation_runB_maskON.json
+?? outputs/gate45b_relation_runB_maskON.log
+?? outputs/gate45b_run.log
+?? outputs/gate45c/
+?? outputs/gate45c_relation_runC0_dropOFF.json
+?? outputs/gate45c_relation_runC0_dropOFF.log
+?? outputs/gate45c_relation_runC1_dropON.json
+?? outputs/gate45c_relation_runC1_dropON.log
+?? outputs/gate45c_run.log
+?? outputs/gate46/
+?? outputs/gate46_eval_run.log
+?? outputs/gate46_exact_nostop_route25.json
+?? outputs/gate46_exact_nostop_route25.log
+?? outputs/gate46_exact_nostop_route28.json
+?? outputs/gate46_exact_nostop_route28.log
+?? outputs/gate46_exact_nostop_route29.json
+?? outputs/gate46_exact_nostop_route29.log
+?? outputs/gate46_relation_nostop_route25.json
+?? outputs/gate46_relation_nostop_route25.log
+?? outputs/gate46_relation_nostop_route28.json
+?? outputs/gate46_relation_nostop_route28.log
+?? outputs/gate46_relation_nostop_route29.json
+?? outputs/gate46_relation_nostop_route29.log
+?? outputs/gate46_smoke_exact.log
+?? outputs/gate46_smoke_relation.log
+?? outputs/gate46_train_exact.log
+?? outputs/gate46_train_relation.log
+?? outputs/gate46_train_run.log
+?? outputs/ood_exact_route24.json
+?? outputs/ood_exact_route25.json
+?? outputs/ood_exact_route26.json
+?? outputs/ood_exact_route27.json
+?? outputs/ood_exact_route28.json
+?? outputs/ood_exact_route29.json
+?? outputs/ood_relation_route24.json
+?? outputs/ood_relation_route25.json
+?? outputs/ood_relation_route26.json
+?? outputs/ood_relation_route27.json
+?? outputs/ood_relation_route28.json
+?? outputs/ood_relation_route29.json
+?? outputs/relation_basic.json
+?? tools/scratch/run_gate4.sh
+?? tools/scratch/run_gate45a.sh
+?? tools/scratch/run_gate45b.sh
+?? tools/scratch/run_gate45c.sh
+?? tools/scratch/run_gate46_eval.sh
+?? tools/scratch/run_gate46_train.sh
+?? tools/scratch/run_gate4_parallel.sh
+
+## local vs official-base commits ahead:
+1
+# Gate 5 Step 1.1 - environment / software versions
+# generated: 2026-09-03 21:51:43 +0800
+
+CARLA version   : 0.9.15 (/home/jiangchengxuan/carla-0.9.15-linux)
+Python version  : 3.10.16
+PyTorch version : 2.6.0+cu124
+CUDA version    : 12.4 (torch cuda build); device NVIDIA RTX A4000 x2
+pytorch-lightning: 2.5.0.post0
+conda env       : plant2
+
+dataset (train DS): /home/jiangchengxuan/data/PlanT2_SSD/PlanT_2_dataset (SSD copy of PlanT2.0)
+dataset (HDD backup): /mnt/2T_HDD/PlanT2.0/PlanT2_Dataset
+official ckpt   : /mnt/2T_HDD/PlanT2.0/checkpoints/PlanT2/epoch=029_final_1.ckpt (446559352 bytes, 2026-08-31 16:45)

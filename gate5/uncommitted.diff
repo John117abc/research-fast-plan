@@ -1,0 +1,386 @@
+diff --git a/PlanT/PlanT_agent.py b/PlanT/PlanT_agent.py
+index acab177..02cf099 100644
+--- a/PlanT/PlanT_agent.py
++++ b/PlanT/PlanT_agent.py
+@@ -4,6 +4,7 @@ import json
+ import yaml
+ from pathlib import Path
+ from datetime import datetime
++from collections import deque
+ 
+ import cv2
+ import torch
+@@ -24,7 +25,7 @@ from birds_eye_view.chauffeurnet import ObsManager
+ from longitudinal_controller import LongitudinalLinearRegressionController
+ from plant_variables import PlanTVariables
+ from util.static_extents import STATIC_EXTENTS, CAR_EXTENTS
+-from relation_features import relationize_exact_row
++from relation_features import relationize_exact_row, filter_planner_tokens
+ 
+ def get_entry_point():
+     return 'PlanTAgent'
+@@ -65,11 +66,25 @@ class PlanTAgent(DataAgent):
+             "input_representation", "exact"
+         )
+ 
++        self.input_remove_stop_sign_token = self.cfg_net["model"]["training"].get(
++            "remove_stop_sign_token", False
++        )
++
+         print("Input representation:", self.input_representation)
+         print(f"BEV: {self.input_bev}, Static: {self.input_static_cars}")
+         print(f"Range: {self.input_range}, front factor: {self.input_range_factor_front}")
+         print(f'Loading model from {LOAD_CKPT_PATH}')
+ 
++        # Gate 4.5A: zero-training diagnostic JSONL log
++        tm_seed = os.environ.get("GATE45A_TM_SEED", "100")
++        route_tag = str(self.route_index).replace("/", "_").replace(".xml", "") if self.route_index else "noroute"
++        self._gate45a_log_path = os.path.join(
++            os.path.abspath(os.getcwd()), "outputs", "gate45a",
++            f"{self.input_representation}_route{route_tag}_tm{tm_seed}.jsonl",
++        )
++        os.makedirs(os.path.dirname(self._gate45a_log_path), exist_ok=True)
++        print("Gate4.5A debug log:", self._gate45a_log_path)
++
+         if Path(LOAD_CKPT_PATH).suffix == '.ckpt':
+             self.net = LitHFLM.load_from_checkpoint(LOAD_CKPT_PATH, map_location=self.device)
+         else:
+@@ -94,6 +109,11 @@ class PlanTAgent(DataAgent):
+         self.control.throttle = 0.0
+         self.control.brake = 1.0
+ 
++        # Gate 4.5C: stop-sign token deadlock detector state (debug only)
++        self._debug_force_clear = False
++        self._deadlock_low_speed_frames = 0
++        self._deadlock_dist_hist = deque(maxlen=40)
++
+         if self.input_bev:
+             obs_config = {
+                 'width_in_pixels': self.config.lidar_resolution_width,
+@@ -184,6 +204,18 @@ class PlanTAgent(DataAgent):
+         # Route wps
+         self._waypoint_planner.load()
+         _, _, _, next_light_dist, next_traffic_light, next_stop_dist, next_stop_sign, speed_limit = self._waypoint_planner.run_step(tick_data["gps"])
++
++        # Gate 4.5A: stash real route rule-object state for the debug log
++        if next_traffic_light is not None:
++            self._dbg_next_light_state = str(next_traffic_light.state)
++            self._dbg_next_light_id = int(next_traffic_light.id)
++        else:
++            self._dbg_next_light_state = None
++            self._dbg_next_light_id = None
++        self._dbg_next_light_dist = float(next_light_dist) if next_light_dist is not None else None
++        self._dbg_next_stop_dist = float(next_stop_dist) if next_stop_dist is not None else None
++        self._dbg_has_next_stop_sign = next_stop_sign is not None
++
+         waypoint_route = self._waypoint_planner.original_route_points[self._waypoint_planner.route_index:][self.config.tf_first_checkpoint_distance:][::self.config.points_per_meter]
+         self.waypoint_route = waypoint_route[:20, :2]
+         self._waypoint_planner.save()
+@@ -204,6 +236,15 @@ class PlanTAgent(DataAgent):
+ 
+         ego_vehicle_location = self._vehicle.get_location()
+         ego_transform = self._vehicle.get_transform()
++
++        # Debug label above ego: identify which model is driving this window
++        label = "EXACT" if self.input_representation == "exact" else "RELATION"
++        label_color = carla.Color(0, 255, 0) if label == "EXACT" else carla.Color(255, 0, 0)
++        self._world.debug.draw_string(
++            ego_transform.location + carla.Location(z=3.0),
++            label, color=label_color, draw_shadow=True, life_time=0.1,
++        )
++
+         ego_matrix = np.array(ego_transform.get_matrix())
+         ego_rotation = ego_transform.rotation
+         ego_yaw = np.deg2rad(ego_rotation.yaw)
+@@ -257,6 +298,40 @@ class PlanTAgent(DataAgent):
+             if ego_vehicle_speed < 0.1 and distance_to_stop_sign < self.config.clearing_distance_to_stop_sign:
+                 self.cleared_stop_sign = True
+ 
++        # Gate 4.5C: stop-sign token deadlock detector (debug only; never changes driving unless env-gated drop in get_input_batch)
++        ego_spd_deadlock = float(tick_data["speed"])
++        stop_token_present = (
++            next_stop_sign is not None
++            and not self.cleared_stop_sign
++            and next_stop_dist is not None
++            and next_stop_dist < 30
++        )
++        if ego_spd_deadlock < 0.1:
++            self._deadlock_low_speed_frames += 1
++        else:
++            self._deadlock_low_speed_frames = 0
++        self._deadlock_dist_hist.append(float(distance_to_stop_sign))
++        dist_2s = self._deadlock_dist_hist[0] if len(self._deadlock_dist_hist) >= 40 else None
++        deadlock_detected = bool(
++            stop_token_present
++            and self._deadlock_low_speed_frames >= 40
++            and distance_to_stop_sign >= 3.0
++            and (dist_2s is not None and abs(distance_to_stop_sign - dist_2s) < 0.2)
++        )
++        if deadlock_detected:
++            self._debug_force_clear = True
++        if next_stop_sign is None or next_stop_dist is None or next_stop_dist > 30.0:
++            self._debug_force_clear = False
++            self._deadlock_low_speed_frames = 0
++        self._dbg_deadlock = {
++            "deadlock_detected": deadlock_detected,
++            "debug_force_clear": self._debug_force_clear,
++            "distance_to_stop_sign": float(distance_to_stop_sign),
++            "distance_2s_ago": dist_2s,
++            "low_speed_frames": self._deadlock_low_speed_frames,
++            "stop_token_present": stop_token_present,
++        }
++
+         self.control = self._get_control(label_raw, tick_data)
+ 
+         inital_frames_delay = 40
+@@ -306,19 +381,23 @@ class PlanTAgent(DataAgent):
+         if pred_wps is not None:
+             pred_wps = pred_wps.detach().squeeze().cpu().numpy()
+ 
++        desired_speed_raw = None
++        mean_speed_raw = None
+         if pred_speed is not None:
+             pred_speed = pred_speed.detach().squeeze().cpu()
+             pred_speed = F.softmax(pred_speed, dim=0)
+             pred_speed = pred_speed.numpy()
+             pred_speed = np.array([0.0, 4.0, 8.0, 10, 13.88888888, 16, 17.77777777, 20]) * pred_speed
+-            desired_speed = sum(pred_speed)
++            desired_speed_raw = float(sum(pred_speed))
++            desired_speed = desired_speed_raw
+         else:
+-            desired_speed = np.linalg.norm((pred_wps[2] - pred_wps[3])) * 4.0 # Using 3rd and 4th waypoint for speed
++            desired_speed_raw = float(np.linalg.norm((pred_wps[2] - pred_wps[3])) * 4.0) # Using 3rd and 4th waypoint for speed
+ 
+             # Creep heuristic
+-            mean_speed = np.linalg.norm(pred_wps[:-1] - pred_wps[1:], axis=-1).mean() * 4.0
++            mean_speed_raw = float(np.linalg.norm(pred_wps[:-1] - pred_wps[1:], axis=-1).mean() * 4.0)
++            desired_speed = desired_speed_raw
+             if gt_velocity < 0.01:
+-                desired_speed = min(mean_speed, 0.1)
++                desired_speed = min(mean_speed_raw, 0.1)
+ 
+         throttle, brake = self.lon_pid.get_throttle_and_brake(desired_speed < 0.05, desired_speed, gt_velocity)
+ 
+@@ -378,6 +457,48 @@ class PlanTAgent(DataAgent):
+                 img = viz_batch(input_batch, rgb=input_data["rgb"], range_front=self.input_range*self.input_range_factor_front, range_sides=self.input_range)#, control_history=self.control_history) #, input_ego=self.cfg_agent.model.training.input_ego)
+                 cv2.imwrite(f"{self.img_path}/{GameTime.get_frame()}.jpg", img)
+ 
++        # Gate 4.5A: zero-training diagnostic JSONL log (must never break driving)
++        try:
++            dbg = getattr(self, "_dbg_relation", None) or {}
++            record = {
++                "frame": int(GameTime.get_frame()),
++                "ego_speed": float(gt_velocity),
++                "desired_speed_raw": desired_speed_raw,
++                "mean_speed_raw": mean_speed_raw,
++                "desired_speed_after_creep": float(desired_speed),
++                "hazard_brake": bool(desired_speed < 0.05),
++                "throttle": float(throttle),
++                "brake": bool(brake),
++                "steer": float(steer),
++                "next_light_id": getattr(self, "_dbg_next_light_id", None),
++                "next_light_state": getattr(self, "_dbg_next_light_state", None),
++                "next_light_dist": getattr(self, "_dbg_next_light_dist", None),
++                "next_stop_dist": getattr(self, "_dbg_next_stop_dist", None),
++                "has_next_stop_sign": bool(getattr(self, "_dbg_has_next_stop_sign", False)),
++                "ego_pos": [float(x) for x in input_data["gps"]],
++                "ego_yaw": float(input_data["yaw"]),
++                "num_type5_tokens": int(dbg.get("num_type5_tokens", 0)),
++                "num_type4_tokens": int(dbg.get("num_type4_tokens", 0)),
++                "num_dangerous": int(dbg.get("num_dangerous", 0)),
++                "num_masked": int(dbg.get("num_masked", 0)),
++                "num_objects_before_mask": int(dbg.get("num_objects_before_mask", 0)),
++                "num_objects_after_mask": int(dbg.get("num_objects_after_mask", 0)),
++                "deadlock_detected": bool(dbg.get("deadlock_detected", False)),
++                "force_clear_active": bool(dbg.get("force_clear_active", False)),
++                "num_type4_tokens_before": int(dbg.get("num_type4_tokens_before", 0)),
++                "num_type4_tokens_after": int(dbg.get("num_type4_tokens_after", 0)),
++                "distance_to_stop_sign": dbg.get("distance_to_stop_sign", None),
++                "low_speed_frames": int(dbg.get("low_speed_frames", 0)),
++                "has_lead_vehicle": bool(dbg.get("has_lead_vehicle", False)),
++                "dangerous_relations": dbg.get("dangerous_relations", []),
++                "pred_wps": pred_wps.tolist() if pred_wps is not None else None,
++                "pred_path": pred_path.tolist() if pred_path is not None else None,
++            }
++            with open(self._gate45a_log_path, "a") as f:
++                f.write(json.dumps(record) + "\n")
++        except Exception:
++            pass
++
+         return control
+     
+     
+@@ -456,6 +577,9 @@ class PlanTAgent(DataAgent):
+             if x["class"].lower() not in car_types and x["class"].lower() in type_nums.keys() and (not x["class"].lower()=="traffic_light" or x["state"] in ["Red", "Yellow"])
+         ] 
+ 
++        # Gate 4.5A: raw exact copy before relationize, used only for debug
++        data_car_exact_raw = [list(row) for row in data_car]
++
+         if self.input_representation == "relation":
+             if len(label_raw) == 0:
+                 raise RuntimeError("No CARLA bounding-box data available.")
+@@ -473,6 +597,108 @@ class PlanTAgent(DataAgent):
+                 for row in data_car
+             ]
+ 
++        # Gate 4.6: shared filter removing stop-sign tokens from planner input
++        if self.input_remove_stop_sign_token:
++            data_car = filter_planner_tokens(data_car, True)
++
++        # Gate 4.5A: token counts + dangerous relations + lead vehicle (debug only)
++        num_type5_tokens = sum(1 for r in data_car if int(round(float(r[0]))) == 5)
++        num_type4_tokens = sum(1 for r in data_car if int(round(float(r[0]))) == 4)
++
++        dangerous_relations = []
++        if self.input_representation == "relation":
++            rel_objs = []
++            for idx, r in enumerate(data_car):
++                t = int(round(float(r[0])))
++                if t in (4, 5):
++                    continue
++                rel_objs.append({
++                    "idx": idx,
++                    "type": t,
++                    "current_clearance": float(r[1]),
++                    "min_clearance": float(r[2]),
++                    "closing": float(r[3]),
++                    "tcpa": float(r[4]),
++                    "cos_bearing": float(r[5]),
++                    "sin_bearing": float(r[6]),
++                })
++            rel_objs.sort(key=lambda o: o["min_clearance"])
++            dangerous_relations = []
++            for o in rel_objs[:5]:
++                raw = data_car_exact_raw[o["idx"]]
++                o["raw_x"] = float(raw[1])
++                o["raw_y"] = float(raw[2])
++                o["raw_yaw_deg"] = float(raw[3])
++                o["raw_speed_kmh"] = float(raw[4])
++                o["raw_width"] = float(raw[5])
++                o["raw_length"] = float(raw[6])
++                dangerous_relations.append(o)
++
++        has_lead_vehicle = False
++        for r in data_car_exact_raw:
++            t = int(round(float(r[0])))
++            if t != 1:
++                continue
++            x = float(r[1])
++            y = float(r[2])
++            if 0.0 < x < 30.0 and abs(y) < 2.5:
++                has_lead_vehicle = True
++                break
++
++        self._dbg_relation = {
++            "num_type5_tokens": num_type5_tokens,
++            "num_type4_tokens": num_type4_tokens,
++            "dangerous_relations": dangerous_relations,
++            "has_lead_vehicle": has_lead_vehicle,
++        }
++
++        # Gate 4.5B: debug-only path-relevance causal mask (env-gated, relation only)
++        num_objects_before_mask = len(data_car)
++        num_masked = 0
++        if self.input_representation == "relation" and os.environ.get("GATE45B_MASK", "0") == "1":
++            corridor_half_width = float(os.environ.get("GATE45B_CORRIDOR_HALF_WIDTH", "2.5"))
++            route_pts = input_data.get("route")
++            if route_pts is not None and len(route_pts) >= 2:
++                route_pts = np.asarray(route_pts, dtype=np.float64)
++                mask_indices = set()
++                for o in dangerous_relations:
++                    d_path = float(np.min(np.linalg.norm(route_pts - np.array([o["raw_x"], o["raw_y"]]), axis=-1)))
++                    o["d_path"] = d_path
++                    o["in_path"] = bool(d_path <= corridor_half_width)
++                    o["is_lead"] = bool(
++                        o["type"] == 1
++                        and 0.0 < o["raw_x"] < 30.0
++                        and abs(o["raw_y"]) < 2.5
++                    )
++                    o["masked"] = bool((not o["in_path"]) and (not o["is_lead"]))
++                    if o["masked"]:
++                        mask_indices.add(o["idx"])
++                if mask_indices:
++                    data_car = [row for i, row in enumerate(data_car) if i not in mask_indices]
++                    num_masked = len(mask_indices)
++                    self._dbg_relation["masked_indices"] = sorted(mask_indices)
++
++        num_objects_after_mask = len(data_car)
++        self._dbg_relation["num_dangerous"] = len(dangerous_relations)
++        self._dbg_relation["num_masked"] = num_masked
++        self._dbg_relation["num_objects_before_mask"] = num_objects_before_mask
++        self._dbg_relation["num_objects_after_mask"] = num_objects_after_mask
++
++        # Gate 4.5C: force-drop type=4 stop-sign token after deadlock (debug, env-gated)
++        num_type4_tokens_before = num_type4_tokens
++        force_clear_active = bool(
++            os.environ.get("GATE45C_FORCE_DROP", "0") == "1"
++            and getattr(self, "_debug_force_clear", False)
++        )
++        if force_clear_active:
++            data_car = [r for r in data_car if int(round(float(r[0]))) != 4]
++        self._dbg_relation["num_type4_tokens_before"] = num_type4_tokens_before
++        self._dbg_relation["num_type4_tokens_after"] = sum(1 for r in data_car if int(round(float(r[0]))) == 4)
++        self._dbg_relation["force_clear_active"] = force_clear_active
++        self._dbg_relation["deadlock_detected"] = bool(getattr(self, "_dbg_deadlock", {}).get("deadlock_detected", False))
++        self._dbg_relation["distance_to_stop_sign"] = getattr(self, "_dbg_deadlock", {}).get("distance_to_stop_sign", None)
++        self._dbg_relation["low_speed_frames"] = getattr(self, "_dbg_deadlock", {}).get("low_speed_frames", 0)
++
+         features = data_car
+ 
+         sample['input'] = features
+diff --git a/PlanT/config/model/PlanT.yaml b/PlanT/config/model/PlanT.yaml
+index e2b1d6e..8ebf03a 100644
+--- a/PlanT/config/model/PlanT.yaml
++++ b/PlanT/config/model/PlanT.yaml
+@@ -22,6 +22,7 @@ training:
+   input_static_cars: True
+ 
+   input_representation: exact
++  remove_stop_sign_token: False
+ 
+   # 第一阶段：地图域 holdout
+   exclude_towns: []
+diff --git a/PlanT/dataset.py b/PlanT/dataset.py
+index c7f5d7c..868de5a 100644
+--- a/PlanT/dataset.py
++++ b/PlanT/dataset.py
+@@ -15,7 +15,7 @@ import glob
+ 
+ from plant_variables import PlanTVariables
+ from util.static_extents import CAR_EXTENTS, STATIC_EXTENTS
+-from relation_features import relationize_exact_row
++from relation_features import relationize_exact_row, filter_planner_tokens
+ 
+ from scipy.spatial import cKDTree
+ 
+@@ -462,6 +462,10 @@ class PlanTDataset(Dataset):
+                 for row in input_objects
+             ]
+ 
++        # Gate 4.6: shared filter removing stop-sign tokens from planner input
++        if self.cfg_train.get("remove_stop_sign_token", False):
++            input_objects = filter_planner_tokens(input_objects, True)
++
+         # remove id 
+         input_objects = [x[:-1] for x in input_objects]
+ 
+diff --git a/PlanT/relation_features.py b/PlanT/relation_features.py
+index eb8763e..db86375 100644
+--- a/PlanT/relation_features.py
++++ b/PlanT/relation_features.py
+@@ -107,3 +107,14 @@ def relationize_exact_row(row, ego_speed_mps, ego_extent, horizon=HORIZON):
+         output.append(row[-1])
+ 
+     return output
++
++
++def filter_planner_tokens(data_car, remove_stop_sign_token=False):
++    """Gate 4.6: shared train/online filter removing type=4 stop-sign tokens.
++
++    Only affects the planner input rows; never touches CARLA GT, forecasting
++    targets, or any other token type.
++    """
++    if not remove_stop_sign_token:
++        return data_car
++    return [row for row in data_car if int(round(float(row[0]))) != 4]
