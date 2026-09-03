@@ -1,7 +1,0 @@
-{"time":"2026-09-01T10:55:23.560903892+08:00","level":"INFO","msg":"stream: starting","core version":"0.19.8","symlink path":"/home/jiangchengxuan/PycharmProjects/research-safe-drive/plant2/outputs/PlanT2_train/wandb/offline-run-20260901_105522-zkgao0ow/logs/debug-core.log"}
-{"time":"2026-09-01T10:55:23.801827778+08:00","level":"INFO","msg":"created new stream","id":"zkgao0ow"}
-{"time":"2026-09-01T10:55:23.801875342+08:00","level":"INFO","msg":"stream: started","id":"zkgao0ow"}
-{"time":"2026-09-01T10:55:23.801913783+08:00","level":"INFO","msg":"writer: Do: started","stream_id":"zkgao0ow"}
-{"time":"2026-09-01T10:55:23.801940229+08:00","level":"INFO","msg":"sender: started","stream_id":"zkgao0ow"}
-{"time":"2026-09-01T10:55:23.801998084+08:00","level":"INFO","msg":"handler: started","stream_id":"zkgao0ow"}
-{"time":"2026-09-01T10:55:23.807917735+08:00","level":"INFO","msg":"Starting system monitor"}

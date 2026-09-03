@@ -1,7 +1,0 @@
-{"time":"2026-09-01T10:58:38.820123436+08:00","level":"INFO","msg":"stream: starting","core version":"0.19.8","symlink path":"/home/jiangchengxuan/PycharmProjects/research-safe-drive/plant2/outputs/PlanT2_train/exact_holdout/2026-09-01_10-58-38/wandb/offline-run-20260901_105838-ncvqd96i/logs/debug-core.log"}
-{"time":"2026-09-01T10:58:38.929392245+08:00","level":"INFO","msg":"created new stream","id":"ncvqd96i"}
-{"time":"2026-09-01T10:58:38.929430899+08:00","level":"INFO","msg":"stream: started","id":"ncvqd96i"}
-{"time":"2026-09-01T10:58:38.929438704+08:00","level":"INFO","msg":"writer: Do: started","stream_id":"ncvqd96i"}
-{"time":"2026-09-01T10:58:38.929462442+08:00","level":"INFO","msg":"sender: started","stream_id":"ncvqd96i"}
-{"time":"2026-09-01T10:58:38.929581669+08:00","level":"INFO","msg":"handler: started","stream_id":"ncvqd96i"}
-{"time":"2026-09-01T10:58:38.935833388+08:00","level":"INFO","msg":"Starting system monitor"}

@@ -1,2 +1,0 @@
-epoch,step,train/acc_speed,train/acc_x,train/acc_y,train/acc_yaw,train/loss_all,train/loss_forecast,train/loss_path,train/loss_speed,train/loss_wp,train/loss_x,train/loss_y,train/loss_yaw
-0,4,0.039840638637542725,0.007968127727508545,0.0,0.0,35.332557678222656,4.2939348220825195,6.38311243057251,3.5069241523742676,3.41699481010437,5.402806282043457,4.816413879394531,3.449594020843506

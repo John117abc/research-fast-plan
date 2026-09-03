@@ -1,2 +1,6 @@
 *__pycache__*
 *.ckpt
+
+# Experiment run outputs / logs (generated)
+outputs/*
+!outputs/.gitkeep
