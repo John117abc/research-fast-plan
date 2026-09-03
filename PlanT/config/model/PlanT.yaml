@@ -22,6 +22,7 @@ training:
   input_static_cars: True
 
   input_representation: exact
+  remove_stop_sign_token: False
 
   # 第一阶段：地图域 holdout
   exclude_towns: []

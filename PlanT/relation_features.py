@@ -107,3 +107,14 @@ def relationize_exact_row(row, ego_speed_mps, ego_extent, horizon=HORIZON):
         output.append(row[-1])
 
     return output
+
+
+def filter_planner_tokens(data_car, remove_stop_sign_token=False):
+    """Gate 4.6: shared train/online filter removing type=4 stop-sign tokens.
+
+    Only affects the planner input rows; never touches CARLA GT, forecasting
+    targets, or any other token type.
+    """
+    if not remove_stop_sign_token:
+        return data_car
+    return [row for row in data_car if int(round(float(row[0]))) != 4]

@@ -15,7 +15,7 @@ import glob
 
 from plant_variables import PlanTVariables
 from util.static_extents import CAR_EXTENTS, STATIC_EXTENTS
-from relation_features import relationize_exact_row
+from relation_features import relationize_exact_row, filter_planner_tokens
 
 from scipy.spatial import cKDTree
 
@@ -461,6 +461,10 @@ class PlanTDataset(Dataset):
                 )
                 for row in input_objects
             ]
+
+        # Gate 4.6: shared filter removing stop-sign tokens from planner input
+        if self.cfg_train.get("remove_stop_sign_token", False):
+            input_objects = filter_planner_tokens(input_objects, True)
 
         # remove id 
         input_objects = [x[:-1] for x in input_objects]
