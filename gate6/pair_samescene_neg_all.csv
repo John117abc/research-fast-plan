@@ -1,0 +1,16 @@
+state_A,state_B,group_A,group_B,uid_A,uid_B,cos_dir,mag_sim
+V000007,V000056,A_HardBreak,A_HardBreak,route10|HardBreakRoute_3,route14|HardBreakRoute_6,-0.6653,0.9723
+V000007,V000094,A_HardBreak,A_HardBreak,route10|HardBreakRoute_3,route3|HardBreakRoute_10,-0.6648,0.9622
+V000007,V000053,A_HardBreak,A_HardBreak,route10|HardBreakRoute_3,route14|HardBreakRoute_6,-0.6643,0.9929
+V000007,V000008,A_HardBreak,A_HardBreak,route10|HardBreakRoute_3,route10|HardBreakRoute_4,-0.6569,0.975
+V000007,V000091,A_HardBreak,A_HardBreak,route10|HardBreakRoute_3,route3|HardBreakRoute_1,-0.6555,0.9703
+V000007,V000047,A_HardBreak,A_HardBreak,route10|HardBreakRoute_3,route14|HardBreakRoute_1,-0.6534,0.9721
+V000007,V000099,A_HardBreak,A_HardBreak,route10|HardBreakRoute_3,route3|HardBreakRoute_7,-0.6533,0.9931
+V000007,V000048,A_HardBreak,A_HardBreak,route10|HardBreakRoute_3,route14|HardBreakRoute_1,-0.6525,0.9843
+V000007,V000052,A_HardBreak,A_HardBreak,route10|HardBreakRoute_3,route14|HardBreakRoute_2,-0.6358,0.9646
+V000007,V000046,A_HardBreak,A_HardBreak,route10|HardBreakRoute_3,route14|HardBreakRoute_1,-0.634,0.9668
+V000007,V000093,A_HardBreak,A_HardBreak,route10|HardBreakRoute_3,route3|HardBreakRoute_10,-0.6116,0.962
+V000037,V000074,C_VehicleTurning,C_VehicleTurning,route10|VehicleTurningRoute_1,route14|VehicleTurningRoute_1,-0.5894,0.6552
+V000007,V000092,A_HardBreak,A_HardBreak,route10|HardBreakRoute_3,route3|HardBreakRoute_10,-0.587,0.9277
+V000009,V000020,B_ParkingCutIn,B_ParkingCutIn,route10|ParkingCutIn_1,route10|ParkingCutIn_4,-0.5658,0.7627
+V000007,V000095,A_HardBreak,A_HardBreak,route10|HardBreakRoute_3,route3|HardBreakRoute_4,-0.5655,0.9657

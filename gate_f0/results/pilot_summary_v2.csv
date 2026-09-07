@@ -1,0 +1,7 @@
+case,seed,t_dec,v0,G46,G68,G810,P0_8,PL_8,P0_10,PL_10,plateau_sec,resumed_slope,file
+static_blocker,1,0.658167390152812,1.0488415271273865,8.549,1.575,0.049,36.44,56.24,36.54,80.99,3.5,,gate_f0/results/pilot/static_blocker/seed1.ndjson
+static_blocker,2,0.673623813316226,1.0661453641659029,8.566,7.347,0.0,48.09,56.37,48.09,81.12,2.0,,gate_f0/results/pilot/static_blocker/seed2.ndjson
+static_blocker,3,0.6830769767984748,1.1840911152268716,8.684,1.609,0.184,37.32,57.26,37.69,82.01,3.5,,gate_f0/results/pilot/static_blocker/seed3.ndjson
+static_blocker,4,0.6294242013245821,1.010040163369973,8.51,2.253,0.0,37.57,55.95,37.57,80.7,3.5,,gate_f0/results/pilot/static_blocker/seed4.ndjson
+static_blocker,5,0.6531819626688957,1.0132667108989077,8.513,5.288,0.0,43.66,55.97,43.66,80.72,3.0,,gate_f0/results/pilot/static_blocker/seed5.ndjson
+temp_crossing,5,11.995764152146876,5.618733242551656,12.28,12.375,12.375,83.78,83.78,108.53,108.53,,,gate_f0/results/pilot/temp_crossing/seed5.ndjson

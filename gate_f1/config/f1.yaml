@@ -1,0 +1,56 @@
+# Gate F1 frozen configuration (supersedes F0 pilot semantics where stated)
+# CARLA version in use: 0.9.15  (plan text said 0.9.16; corrected to actual)
+
+simulation:
+  dt: 0.5
+  horizon_sec: 10.0
+  horizons_sec: [2, 4, 6, 8, 10]
+  G_primary: [8, 10]            # G = (P(10)-P(8))/2
+
+engine:
+  accel_primitives: [-4.0, -2.0, 0.0, 1.5]
+  v_max: 12.0
+  lane_change_duration_sec: 3.0
+  safety_margin_m: 0.5
+  ego_half_extent: [2.2, 1.0]
+  beam_width: 100
+  keep_per_bucket: 20
+
+# DECISION FRAME (F1 override of F0 interaction-onset, frozen for ALL 8 classes):
+# t0 = end of preparation phase == first recorded frame of the formal scenario
+# (ego speed within 0.5 m/s of target for >=1.0 s already holds at t0).
+# Occupancy timeline is anchored to t0; actors are triggered by scripted offsets
+# relative to t0 (distance/projected-arrival based), NOT by wall-clock from boot.
+# Ego s0 = 0 at t0. Recorded before: pre-warmup motion is discarded.
+decision_frame:
+  rule: t0 = scenario_active_start   # preparation already done
+  prep_require_speed_band: 0.5       # |v - v_target| < 0.5 m/s
+  prep_require_hold_sec: 1.0
+  start_record_only_after_prep: true
+
+offline_per_sample:                  # three runs of the FROZEN engine per record
+  runs: [P0_current, PL_left, Pfree_baseline]
+  Pfree: dynamic actors removed; road geometry, ego state, dynamics unchanged
+
+metrics_export:                      # per-sample one-line output (see protocol)
+  per_horizon: [P0_2, P0_4, P0_6, P0_8, P0_10,
+                PL_2, PL_4, PL_6, PL_8, PL_10,
+                Pfree_2, Pfree_4, Pfree_6, Pfree_8, Pfree_10]
+  derived: [G0, GL, quadrant, min_clearance_m, n_branches]
+  save_fine_series: true             # 0.5 s P0/PL/Pfree curves sidecar
+
+scenario:
+  town: Town12
+  road_segment_json: gate_f0/road_segment.json
+  tm_background: false
+  nominal_target_speed: 8.0          # default cruise m/s (class may raise it)
+  record_seconds: 12.0               # >=10 s horizon + margin
+
+pilot_round_1:                       # F1 round 1
+  scenarios: [A1, A2, B1, B2, C1, C2, D1, D2]
+  params_per_scenario: 5
+  passes_threshold: 0.8              # >=4/5 into expected class before round 2
+  total_runs: 40
+pilot_round_2:
+  params_per_scenario: 10
+  total_runs: 80

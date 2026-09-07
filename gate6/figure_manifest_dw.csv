@@ -1,0 +1,7 @@
+combo,state_A,state_B,cos_dir,file
+"('A_HardBreak', 'B_ParkingCutIn')",V000023,V000099,0.9932,gate6/figures/dw/dw_V000023_V000099.png
+"('A_HardBreak', 'C_VehicleTurning')",V000076,V000098,0.9176,gate6/figures/dw/dw_V000076_V000098.png
+"('A_HardBreak', 'D_PedestrianCrossing')",V000035,V000095,0.9654,gate6/figures/dw/dw_V000035_V000095.png
+"('B_ParkingCutIn', 'C_VehicleTurning')",V000012,V000074,0.9501,gate6/figures/dw/dw_V000012_V000074.png
+"('B_ParkingCutIn', 'D_PedestrianCrossing')",V000035,V000105,0.9793,gate6/figures/dw/dw_V000035_V000105.png
+"('C_VehicleTurning', 'D_PedestrianCrossing')",V000035,V000074,0.9151,gate6/figures/dw/dw_V000035_V000074.png

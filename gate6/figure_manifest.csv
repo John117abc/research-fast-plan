@@ -1,0 +1,12 @@
+combo,state_A,state_B,cos_dir,file
+"('A_HardBreak', 'B_ParkingCutIn')",V000023,V000099,0.993,gate6/figures/pair_V000023_V000099.png
+"('A_HardBreak', 'B_ParkingCutIn')",V000023,V000056,0.985,gate6/figures/pair_V000023_V000056.png
+"('A_HardBreak', 'C_VehicleTurning')",V000076,V000098,0.918,gate6/figures/pair_V000076_V000098.png
+"('A_HardBreak', 'D_PedestrianCrossing')",V000035,V000095,0.965,gate6/figures/pair_V000035_V000095.png
+"('A_HardBreak', 'D_PedestrianCrossing')",V000031,V000095,0.926,gate6/figures/pair_V000031_V000095.png
+"('B_ParkingCutIn', 'C_VehicleTurning')",V000012,V000074,0.95,gate6/figures/pair_V000012_V000074.png
+"('B_ParkingCutIn', 'C_VehicleTurning')",V000074,V000105,0.934,gate6/figures/pair_V000074_V000105.png
+"('B_ParkingCutIn', 'D_PedestrianCrossing')",V000035,V000105,0.979,gate6/figures/pair_V000035_V000105.png
+"('B_ParkingCutIn', 'D_PedestrianCrossing')",V000031,V000105,0.951,gate6/figures/pair_V000031_V000105.png
+"('C_VehicleTurning', 'D_PedestrianCrossing')",V000035,V000074,0.915,gate6/figures/pair_V000035_V000074.png
+"('C_VehicleTurning', 'D_PedestrianCrossing')",V000031,V000074,0.907,gate6/figures/pair_V000031_V000074.png

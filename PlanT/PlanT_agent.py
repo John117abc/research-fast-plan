@@ -85,6 +85,14 @@ class PlanTAgent(DataAgent):
         os.makedirs(os.path.dirname(self._gate45a_log_path), exist_ok=True)
         print("Gate4.5A debug log:", self._gate45a_log_path)
 
+        # Gate 6: logging / snapshot switches (debug only; never change forward)
+        self._gate6_on = bool(
+            os.environ.get("GATE6_SMOKE", "0") == "1"
+            or os.environ.get("GATE6_SNAP", "0") == "1"
+        )
+        self._gate6_tag = route_tag
+        self._dbg_actor_ids = None
+
         if Path(LOAD_CKPT_PATH).suffix == '.ckpt':
             self.net = LitHFLM.load_from_checkpoint(LOAD_CKPT_PATH, map_location=self.device)
         else:
@@ -332,6 +340,31 @@ class PlanTAgent(DataAgent):
             "stop_token_present": stop_token_present,
         }
 
+        # Gate 6 smoke: minimal scenario annotation (debug only, env-gated)
+        self._dbg_scenario = None
+        if os.environ.get("GATE6_SMOKE", "0") == "1":
+            try:
+                sc_actors = []
+                for _x in label_raw:
+                    if _x.get("scenario") and _x["class"].lower() in self.plant_vars.car_types:
+                        sc_actors.append({
+                            "id": int(_x["id"]) if "id" in _x else None,
+                            "class": _x["class"],
+                            "scenario": _x["scenario"],
+                            "x_ego": float(_x["position"][0]),
+                            "y_ego": float(_x["position"][1]),
+                            "yaw_rel_deg": float(rad2deg(_x["yaw"])),
+                            "speed_kmh": float(_x["speed"]) * 3.6,
+                            "width_m": float(_x["extent"][1] * 2),
+                            "length_m": float(_x["extent"][0] * 2),
+                        })
+                self._dbg_scenario = {
+                    "active_scenarios": sorted({a["scenario"] for a in sc_actors}),
+                    "actors": sc_actors,
+                }
+            except Exception:
+                self._dbg_scenario = None
+
         self.control = self._get_control(label_raw, tick_data)
 
         inital_frames_delay = 40
@@ -380,6 +413,14 @@ class PlanTAgent(DataAgent):
             pred_path = pred_path.detach().squeeze().cpu().numpy()
         if pred_wps is not None:
             pred_wps = pred_wps.detach().squeeze().cpu().numpy()
+
+        # Gate 6: optional full-forward snapshot capture at ~5 Hz (debug only)
+        if self._gate6_on and os.environ.get("GATE6_SNAP", "0") == "1":
+            try:
+                if self.step > 40 and self.step % 4 == 0:
+                    self._gate6_capture(input_batch, pred_path, pred_wps, input_data)
+            except Exception:
+                pass
 
         desired_speed_raw = None
         mean_speed_raw = None
@@ -494,6 +535,10 @@ class PlanTAgent(DataAgent):
                 "pred_wps": pred_wps.tolist() if pred_wps is not None else None,
                 "pred_path": pred_path.tolist() if pred_path is not None else None,
             }
+            _scn = getattr(self, "_dbg_scenario", None)
+            if _scn is not None:
+                record["active_scenarios"] = _scn["active_scenarios"]
+                record["scenario_actors"] = _scn["actors"]
             with open(self._gate45a_log_path, "a") as f:
                 f.write(json.dumps(record) + "\n")
         except Exception:
@@ -579,6 +624,24 @@ class PlanTAgent(DataAgent):
 
         # Gate 4.5A: raw exact copy before relationize, used only for debug
         data_car_exact_raw = [list(row) for row in data_car]
+
+        # Gate 6: actor_id per token row (must align with data_car order)
+        self._dbg_actor_ids = None
+        if self._gate6_on:
+            try:
+                ids = []
+                for x in label_raw:
+                    if x["class"].lower() in car_types:
+                        ids.append(x.get("id"))
+                for x in label_raw:
+                    if (x["class"].lower() not in car_types
+                            and x["class"].lower() in type_nums.keys()
+                            and (not x["class"].lower() == "traffic_light" or x["state"] in ["Red", "Yellow"])):
+                        ids.append(x.get("id"))
+                if len(ids) == len(data_car):
+                    self._dbg_actor_ids = ids
+            except Exception:
+                self._dbg_actor_ids = None
 
         if self.input_representation == "relation":
             if len(label_raw) == 0:
@@ -721,6 +784,49 @@ class PlanTAgent(DataAgent):
         input_batch = generate_batch(batch)
 
         return input_batch
+
+    def _gate6_capture(self, input_batch, pred_path, pred_wps, input_data):
+        """Save one complete pre-forward snapshot (npz) + metadata jsonl (5 Hz)."""
+        base = os.path.join(os.path.abspath(os.getcwd()), "outputs", "gate6", "snapshots",
+                            f"{self.input_representation}_{self._gate6_tag}")
+        os.makedirs(base, exist_ok=True)
+        frame = int(GameTime.get_frame())
+        arr = {}
+        for k in ("x_objs", "idxs", "route_original", "speed_limit", "BEV"):
+            if k in input_batch and input_batch[k] is not None:
+                arr[k] = input_batch[k].detach().cpu().numpy()
+        if pred_path is not None:
+            arr["pred_path_online"] = np.asarray(pred_path)
+        if pred_wps is not None:
+            arr["pred_wps_online"] = np.asarray(pred_wps)
+        np.savez_compressed(os.path.join(base, f"f{frame:06d}.npz"), **arr)
+
+        xobjs = arr.get("x_objs")
+        actor_rows = []
+        if xobjs is not None and getattr(self, "_dbg_actor_ids", None):
+            ids = self._dbg_actor_ids
+            for i, aid in enumerate(ids):
+                if i + 1 >= xobjs.shape[0]:
+                    break
+                row = xobjs[i + 1]
+                actor_rows.append({
+                    "token_idx": i + 1,
+                    "actor_id": aid,
+                    "type": float(row[0]),
+                    "x": float(row[1]), "y": float(row[2]),
+                    "yaw_deg": float(row[3]), "speed_kmh": float(row[4]),
+                    "width": float(row[5]), "length": float(row[6]),
+                })
+        meta = {
+            "frame": frame,
+            "ego_speed_mps": float(input_data["speed"]),
+            "ego_pos": [float(v) for v in input_data["gps"]],
+            "ego_yaw": float(input_data["yaw"]),
+            "n_objects": int(xobjs.shape[0] - 1) if xobjs is not None else None,
+            "actors": actor_rows,
+        }
+        with open(os.path.join(base, "meta.jsonl"), "a") as f:
+            f.write(json.dumps(meta) + "\n")
 
     def destroy(self, results = None):
         super().destroy()

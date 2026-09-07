@@ -1,0 +1,52 @@
+{
+ "baseline_euclid": {
+  "scene": {
+   "d_same": 38.097785486630166,
+   "d_diff": 386.37847824976035,
+   "holds": true
+  },
+  "mech": {
+   "d_same": 49.42698305222697,
+   "d_diff": 76.10557582019335,
+   "holds": true
+  },
+  "lmo_k1": 0.7596153846153846,
+  "lmo_per": {
+   "LateralOptional": 0.935,
+   "Contingency/Wait": 1.0,
+   "LateralNecessary": 0.214
+  }
+ },
+ "learned_global": {
+  "scene": {
+   "d_same": 17.992744562402706,
+   "d_diff": 2778.029354683153,
+   "holds": true
+  },
+  "mech": {
+   "d_same": 17.23254543755777,
+   "d_diff": 2136.522379241389,
+   "holds": true
+  },
+  "lmo_k1": 0.5576923076923077,
+  "lmo_per": {
+   "LateralOptional": 0.609,
+   "Contingency/Wait": 1.0,
+   "LateralNecessary": 0.0
+  }
+ },
+ "cv_fold_hit": {
+  "A1": 1.0,
+  "A2": 0.9,
+  "B1": 0.0,
+  "B2": 0.5,
+  "C1": 1.0,
+  "C2": 0.3,
+  "D1": 1.0,
+  "D2": 1.0,
+  "G1": 0.0,
+  "G2": 1.0,
+  "G3": 0.88
+ },
+ "cv_gate1_frac": 1.0
+}

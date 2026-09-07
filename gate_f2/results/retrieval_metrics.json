@@ -1,0 +1,22 @@
+{
+ "distance_pairs": {
+  "literal-scene": {
+   "n_same_f": 1422,
+   "n_diff_s": 18,
+   "n_ctrl": 426,
+   "mean_d_same_struct_diff_scene": 4.9837,
+   "mean_d_diff_struct_same_scene": 19.5657,
+   "mean_d_same_struct_same_scene(ctrl)": 2.4293,
+   "claim_holds": true
+  },
+  "mechanism": {
+   "n_same_f": 1040,
+   "n_diff_s": 820,
+   "n_ctrl": 808,
+   "mean_d_same_struct_diff_scene": 6.056,
+   "mean_d_diff_struct_same_scene": 7.8937,
+   "mean_d_same_struct_same_scene(ctrl)": 2.2567,
+   "claim_holds": true
+  }
+ }
+}

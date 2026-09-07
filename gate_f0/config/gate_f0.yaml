@@ -1,0 +1,47 @@
+# Gate F0 frozen configuration
+simulation:
+  dt: 0.5
+  horizon_sec: 10.0
+  horizons_sec: [2, 4, 6, 8, 10]
+  primary_interval_sec: [8, 10]
+
+ego:
+  accel_primitives: [-4.0, -2.0, 0.0, 1.5]   # m/s^2
+  default_speed_limit_mps: 12.0
+  v_buckets_mps: [0, 2, 5, 8, 12, 100]
+  keep_per_bucket: 20
+  lane_follow: lane_pid          # simple Lane-PID ego (no PlanT)
+
+lane_change:
+  enabled: true
+  duration_sec: 3.0
+  direction: left
+  trigger_window_sec: [0.0, 5.0]   # candidate t_s for starting a change
+
+beam:
+  width: 100
+
+collision:
+  safety_margin_m: 0.5
+  sensitivity_m: [0.3, 0.5, 0.8]
+  use_gt_actor_future: true
+
+progress:
+  epsilon_sweep_mps: [0.05, 0.10, 0.15, 0.20]
+
+scenario:
+  tm_background: false            # all scripted, no random traffic
+  seeds: [1, 2, 3, 4, 5]
+
+road:
+  town: Town12
+  min_straight_m: 120
+  # to be frozen in F0-4 (filled after segment selection smoke)
+
+recorder:
+  hz: 20
+  down_dt: 0.5
+
+pilot:
+  cases: [temporary_crossing, static_blocker_free_left]
+  seeds_per_case: 5

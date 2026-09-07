@@ -14,6 +14,7 @@ from __future__ import print_function
 import glob
 import os
 import sys
+import json
 import importlib
 import inspect
 import py_trees
@@ -319,6 +320,31 @@ class RouteScenario(BasicScenario):
                 # Only init scenarios that are close to ego
                 if trigger_location.distance(ego_location) < self.INIT_THRESHOLD:
                     scenario_instance = scenario_class(self.world, [ego_vehicle], scenario_config, timeout=self.timeout)
+
+                    # Gate6 S-side scenario event log (debug only, env-gated)
+                    if os.environ.get("GATE6_SCNLOG", "0") == "1":
+                        try:
+                            _tp = scenario_config.trigger_points[0]
+                            try:
+                                _gt = CarlaDataProvider.get_world().get_snapshot().timestamp.elapsed_seconds
+                            except Exception:
+                                _gt = None
+                            _ev = {
+                                "route_config_name": getattr(self.config, "name", None),
+                                "config_name": scenario_config.name,
+                                "type": scenario_config.type,
+                                "game_time": _gt,
+                                "trigger_x": _tp.location.x,
+                                "trigger_y": _tp.location.y,
+                                "trigger_yaw": _tp.rotation.yaw,
+                                "actor_ids": [a.id for a in scenario_instance.other_actors if a is not None],
+                            }
+                            _p = os.environ.get("GATE6_SCNLOG_PATH", "outputs/gate6/scenario_events.jsonl")
+                            os.makedirs(os.path.dirname(os.path.abspath(_p)), exist_ok=True)
+                            with open(_p, "a") as _f:
+                                _f.write(json.dumps(_ev) + "\n")
+                        except Exception:
+                            pass
 
                     # Add new scenarios to list
                     self.list_scenarios.append(scenario_instance)

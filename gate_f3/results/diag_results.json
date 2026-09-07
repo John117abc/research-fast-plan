@@ -1,0 +1,28 @@
+{
+ "euclid": {
+  "d_same_mech_cross": 49.42698305222697,
+  "d_diff_same_mech": 76.10557582019335,
+  "gate1_holds": true,
+  "lmo_k1": 0.7596153846153846,
+  "lmo_per": {
+   "LateralOptional": 0.935,
+   "Contingency/Wait": 1.0,
+   "LateralNecessary": 0.214
+  }
+ },
+ "diag": {
+  "d_same_mech_cross": 0.17504379157229294,
+  "d_diff_same_mech": 64.61779854626715,
+  "gate1_holds": true,
+  "lmo_k1": 0.7211538461538461,
+  "lmo_per": {
+   "LateralOptional": 0.913,
+   "Contingency/Wait": 1.0,
+   "LateralNecessary": 0.107
+  }
+ },
+ "w_range": [
+  5.8723742532989835e-06,
+  9.373395309525144
+ ]
+}

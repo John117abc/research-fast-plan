@@ -1,0 +1,26 @@
+config_name,group,type,triggered,actor_mapping,in_token,interaction,ego_response,detail
+ParkingCutIn_1,B,ParkingCutIn,Y,Y,Y,Y,Y(stop),"obs_t=38-58s min_dist=3.1m close_frames=70 ego_min=-0.012908075552971018 lateral_cross=[(3722, 3.1, 5.1, 0.1)]"
+PedestrianCrossing_1,D,PedestrianCrossing,Y,Y,Y,Y,Y(stop),"obs_t=272-281s min_dist=4.9m close_frames=89 ego_min=-0.010017337469086895 lateral_cross=[(4023, 3.5, -4.6, 0.1), (4021, 5.4, -5.8, 0.1), (4019, 4.4, -5.8, 0.1)]"
+ParkingCutIn_4,B,ParkingCutIn,Y,Y,Y,Y,Y(stop),obs_t=272-540s min_dist=3.0m close_frames=126 ego_min=-0.022054903961658077 lateral_cross=[]
+VehicleTurningRoute_1,C,VehicleTurningRoute,Y,Y,Y,Y,Y(stop),"obs_t=314-348s min_dist=6.8m close_frames=12 ego_min=-2.084296237968579e-05 lateral_cross=[(4108, 19.1, -1.9, 0.1)]"
+ParkingCutIn_2,B,ParkingCutIn,Y,Y,Y,Y,Y(stop),obs_t=358-404s min_dist=3.1m close_frames=290 ego_min=-0.009596903623287967 lateral_cross=[]
+ParkingCutIn_3,B,ParkingCutIn,Y,Y,Y,Y,Y(stop),obs_t=375-786s min_dist=1.9m close_frames=135 ego_min=-0.022054903961658077 lateral_cross=[]
+ParkingCutIn_10,B,ParkingCutIn,Y,Y,N,N,N,no token obs (actor never entered range)
+ParkingCutIn_9,B,ParkingCutIn,Y,Y,N,N,N,no token obs (actor never entered range)
+ParkingCutIn_8,B,ParkingCutIn,Y,Y,N,N,N,no token obs (actor never entered range)
+ParkingCutIn_5,B,ParkingCutIn,Y,Y,N,N,N,no token obs (actor never entered range)
+VehicleTurningRoute_2,C,VehicleTurningRoute,Y,Y,N,N,N,no token obs (actor never entered range)
+ParkingCutIn_11,B,ParkingCutIn,Y,Y,N,N,N,no token obs (actor never entered range)
+ParkingCutIn_12,B,ParkingCutIn,Y,Y,N,N,N,no token obs (actor never entered range)
+PedestrianCrossing_2,D,PedestrianCrossing,Y,Y,N,N,N,no token obs (actor never entered range)
+ParkingCutIn_6,B,ParkingCutIn,Y,Y,N,N,N,no token obs (actor never entered range)
+ParkingCutIn_7,B,ParkingCutIn,Y,Y,N,N,N,no token obs (actor never entered range)
+HardBreakRoute_10,A,HardBreakRoute,Y,N/A(no owned),Y,Y,Y(stop),stop_t=9-14s lead_id=3865 lead_speed_before=None during=0.0 ego_stopped
+HardBreakRoute_1,A,HardBreakRoute,Y,N/A(no owned),Y,Y,Y(stop),stop_t=71-72s lead_id=4012 lead_speed_before=36.61207962036133 during=2.129442509613e-05 ego_stopped
+HardBreakRoute_2,A,HardBreakRoute,Y,N/A(no owned),N,N,Y(stop),stop_t=134-135s no_front_vehicle_in_token
+HardBreakRoute_3,A,HardBreakRoute,Y,N/A(no owned),N,N,Y(stop),stop_t=134-135s no_front_vehicle_in_token
+HardBreakRoute_4,A,HardBreakRoute,Y,N/A(no owned),Y,Y,Y(stop),stop_t=208-232s lead_id=4156 lead_speed_before=27.30789566040039 during=7.306560516357422 ego_stopped
+HardBreakRoute_8,A,HardBreakRoute,Y,N/A(no owned),Y,Y,Y(stop),stop_t=208-232s lead_id=4156 lead_speed_before=17.817750930786133 during=7.306560516357422 ego_stopped
+HardBreakRoute_7,A,HardBreakRoute,Y,N/A(no owned),Y,Y,Y(stop),stop_t=257-267s lead_id=4237 lead_speed_before=29.005535125732422 during=28.993267059326172 ego_stopped
+HardBreakRoute_6,A,HardBreakRoute,Y,N/A(no owned),N,N,Y(stop),stop_t=276-277s no_front_vehicle_in_token
+HardBreakRoute_5,A,HardBreakRoute,Y,N/A(no owned),Y,Y,Y(stop),stop_t=381-381s lead_id=4120 lead_speed_before=20.074058532714844 during=3.3470938205718994 ego_stopped

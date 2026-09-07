@@ -1,0 +1,30 @@
+state_id,scenario_group,route,candidate_degree,scene_pair_types
+V000021,B_ParkingCutIn,route10,9,"{'A_HardBreak': 8, 'D_PedestrianCrossing': 1}"
+V000035,D_PedestrianCrossing,route10,8,"{'B_ParkingCutIn': 4, 'A_HardBreak': 3, 'C_VehicleTurning': 1}"
+V000023,B_ParkingCutIn,route10,7,{'A_HardBreak': 7}
+V000017,B_ParkingCutIn,route10,7,{'A_HardBreak': 7}
+V000046,A_HardBreak,route14,7,"{'B_ParkingCutIn': 6, 'D_PedestrianCrossing': 1}"
+V000105,B_ParkingCutIn,route3,7,"{'D_PedestrianCrossing': 3, 'A_HardBreak': 3, 'C_VehicleTurning': 1}"
+V000018,B_ParkingCutIn,route10,7,"{'A_HardBreak': 5, 'D_PedestrianCrossing': 2}"
+V000052,A_HardBreak,route14,6,"{'B_ParkingCutIn': 5, 'D_PedestrianCrossing': 1}"
+V000091,A_HardBreak,route3,6,{'B_ParkingCutIn': 6}
+V000048,A_HardBreak,route14,6,{'B_ParkingCutIn': 6}
+V000014,B_ParkingCutIn,route10,6,{'A_HardBreak': 6}
+V000095,A_HardBreak,route3,6,"{'B_ParkingCutIn': 4, 'D_PedestrianCrossing': 2}"
+V000074,C_VehicleTurning,route14,6,"{'A_HardBreak': 1, 'B_ParkingCutIn': 2, 'D_PedestrianCrossing': 3}"
+V000099,A_HardBreak,route3,5,{'B_ParkingCutIn': 5}
+V000056,A_HardBreak,route14,5,{'B_ParkingCutIn': 5}
+V000047,A_HardBreak,route14,5,{'B_ParkingCutIn': 5}
+V000012,B_ParkingCutIn,route10,5,"{'D_PedestrianCrossing': 3, 'A_HardBreak': 1, 'C_VehicleTurning': 1}"
+V000024,B_ParkingCutIn,route10,5,{'A_HardBreak': 5}
+V000031,D_PedestrianCrossing,route10,5,"{'B_ParkingCutIn': 3, 'A_HardBreak': 1, 'C_VehicleTurning': 1}"
+V000061,D_PedestrianCrossing,route14,4,"{'B_ParkingCutIn': 2, 'C_VehicleTurning': 1, 'A_HardBreak': 1}"
+V000045,A_HardBreak,route14,2,"{'C_VehicleTurning': 1, 'D_PedestrianCrossing': 1}"
+V000016,B_ParkingCutIn,route10,2,{'C_VehicleTurning': 2}
+V000040,C_VehicleTurning,route10,2,{'B_ParkingCutIn': 2}
+V000082,C_VehicleTurning,route14,2,{'B_ParkingCutIn': 2}
+V000011,B_ParkingCutIn,route10,2,{'C_VehicleTurning': 2}
+V000076,C_VehicleTurning,route14,1,{'A_HardBreak': 1}
+V000098,A_HardBreak,route3,1,{'C_VehicleTurning': 1}
+V000013,B_ParkingCutIn,route10,1,{'D_PedestrianCrossing': 1}
+V000026,D_PedestrianCrossing,route10,1,{'B_ParkingCutIn': 1}

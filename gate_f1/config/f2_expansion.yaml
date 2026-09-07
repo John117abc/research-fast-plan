@@ -1,0 +1,44 @@
+# Gate F2 stage-2 expansion rows (frozen 2026-09-07).
+# Three physical states, combinatorial coverage over 2-3 state variables each.
+#   G1: lead decelerates to a full stop and stays stopped in the terminal
+#       window; left lane free                       -> expect LateralNecessary
+#   G2: same stopped lead; left lane continuously occupied
+#                                                   -> expect Contingency
+#   G3: temporary occupant on C0 that drives away within the horizon
+#       (current corridor reopens); left free        -> expect LateralOptional
+# Names/fields:
+#   ego_v : ego kinematic cruise target
+#   s0    : lead / occupant initial station
+#   v0    : lead cruise speed before braking
+#   tc    : lead cruise duration before braking (s)
+#   a     : lead brake decel (m/s^2)
+#   occ_s : G3 occupant station
+#   t_leave : G3 leave time (s)
+#   away_v  : G3 leave speed
+g1:
+  - {ego_v: 7, s0: 40, v0: 8, tc: 2.0, a: 2.5}
+  - {ego_v: 7, s0: 40, v0: 6, tc: 3.0, a: 2.5}
+  - {ego_v: 7, s0: 50, v0: 9, tc: 1.5, a: 2.5}
+  - {ego_v: 9, s0: 64, v0: 9, tc: 2.0, a: 2.5}
+  - {ego_v: 9, s0: 64, v0: 8, tc: 3.0, a: 2.5}
+  - {ego_v: 9, s0: 60, v0: 9, tc: 1.5, a: 2.5}
+  - {ego_v: 9, s0: 60, v0: 6, tc: 2.0, a: 2.5}
+  - {ego_v: 8, s0: 50, v0: 8, tc: 3.0, a: 3.0}
+g2:   # same stopped-lead kinematics; left slow platoon occupies CL
+  - {ego_v: 7, s0: 40, v0: 8, tc: 2.0, a: 2.5}
+  - {ego_v: 7, s0: 40, v0: 6, tc: 3.0, a: 2.5}
+  - {ego_v: 7, s0: 50, v0: 9, tc: 1.5, a: 2.5}
+  - {ego_v: 9, s0: 64, v0: 9, tc: 1.0, a: 2.5}
+  - {ego_v: 9, s0: 64, v0: 8, tc: 3.0, a: 2.5}
+  - {ego_v: 9, s0: 60, v0: 9, tc: 1.5, a: 2.5}
+  - {ego_v: 9, s0: 60, v0: 6, tc: 2.0, a: 2.5}
+  - {ego_v: 8, s0: 50, v0: 8, tc: 3.0, a: 3.0}
+g3:   # temporary occupant leaves within horizon
+  - {ego_v: 6, occ_s: 52, t_leave: 2.5, away_v: 8}
+  - {ego_v: 6, occ_s: 52, t_leave: 5.0, away_v: 11}
+  - {ego_v: 6, occ_s: 66, t_leave: 7.0, away_v: 8}
+  - {ego_v: 8, occ_s: 52, t_leave: 5.0, away_v: 8}
+  - {ego_v: 8, occ_s: 52, t_leave: 7.0, away_v: 11}
+  - {ego_v: 8, occ_s: 66, t_leave: 2.5, away_v: 11}
+  - {ego_v: 8, occ_s: 66, t_leave: 5.0, away_v: 8}
+  - {ego_v: 6, occ_s: 66, t_leave: 2.5, away_v: 11}

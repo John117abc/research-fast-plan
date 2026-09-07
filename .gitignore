@@ -4,3 +4,7 @@
 # Experiment run outputs / logs (generated)
 outputs/*
 !outputs/.gitkeep
+
+# Gate F1/F3 large raw recordings
+**/run*.ndjson
+gate6/smoke/

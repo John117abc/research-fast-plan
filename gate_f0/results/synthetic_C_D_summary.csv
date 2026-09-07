@@ -1,0 +1,8 @@
+archetype,params,G0,GL,quadrant
+A(temporary),"{'s_c': 30, 'win': [1, 5]}",9.0,12.375,LateralOptional
+B(static+freeLeft),{'s_c': 30},0.0,12.375,LateralNecessary
+A'longSuff(clWall),"{'s_c': 30, 'cl': 'blocked'}",7.0,,LongitudinalSufficient
+C,"{'vlead': 3.0, 's0': 22.0}",2.969,12.375,LateralOptional
+C,"{'vlead': 2.5, 's0': 25.0}",2.469,12.375,LateralOptional
+C,"{'vlead': 4.0, 's0': 30.0}",4.0,12.375,LateralOptional
+D,{'cl_wall': True},0.0,,Contingency/Wait

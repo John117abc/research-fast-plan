@@ -1,0 +1,17 @@
+config_name,group,type,triggered,actor_mapping,in_token,interaction,ego_response,detail
+PedestrianCrossing_1,D,PedestrianCrossing,Y,Y,Y,Y,Y(stop),obs_t=319-332s min_dist=4.0m close_frames=120 ego_min=0.0026592566827358505 lateral_cross=[]
+VehicleTurningRoute_1,C,VehicleTurningRoute,Y,Y,Y,Y,Y(stop),obs_t=250-312s min_dist=2.3m close_frames=55 ego_min=-0.005107001744645798 lateral_cross=[]
+VehicleTurningRoute_2,C,VehicleTurningRoute,Y,Y,Y,Y,Y(stop),obs_t=595-628s min_dist=2.9m close_frames=114 ego_min=0.001994075182382775 lateral_cross=[]
+PedestrianCrossing_2,D,PedestrianCrossing,Y,Y,Y,Y,Y(stop),"obs_t=573-585s min_dist=5.8m close_frames=101 ego_min=0.013160784575402967 lateral_cross=[(4421, 6.0, -8.2, 0.1)]"
+PedestrianCrossing_3,D,PedestrianCrossing,Y,Y,Y,Y,Y(slow),"obs_t=705-712s min_dist=4.8m close_frames=64 ego_min=1.9520398538367116 lateral_cross=[(4561, 4.6, -4.8, 0.1), (4565, 3.6, -5.4, 0.1)]"
+VehicleTurningRoute_3,C,VehicleTurningRoute,Y,Y,Y,Y,Y(stop),obs_t=856-946s min_dist=2.1m close_frames=227 ego_min=-0.003352801775649757 lateral_cross=[]
+PedestrianCrossing_4,D,PedestrianCrossing,Y,Y,Y,Y,Y(stop),"obs_t=1016-1026s min_dist=8.2m close_frames=86 ego_min=0.0016920498525979408 lateral_cross=[(4871, 4.5, -4.4, 0.0), (4876, 3.5, -5.1, 0.0), (4874, 5.4, -7.2, 0.1)]"
+VehicleTurningRoute_4,C,VehicleTurningRoute,Y,Y,Y,Y,Y(stop),"obs_t=1446-1484s min_dist=2.1m close_frames=102 ego_min=0.0018544626543591115 lateral_cross=[(5592, 14.2, -2.7, 0.1)]"
+VehicleTurningRoute_5,C,VehicleTurningRoute,Y,Y,Y,Y,Y(stop),obs_t=1499-1781s min_dist=2.7m close_frames=207 ego_min=-0.004456911446147526 lateral_cross=[]
+HardBreakRoute_1,A,HardBreakRoute,Y,N/A(no owned),Y,Y,Y(stop),stop_t=9-13s lead_id=3745 lead_speed_before=None during=0.0 ego_stopped
+HardBreakRoute_2,A,HardBreakRoute,Y,N/A(no owned),Y,Y,Y(stop),stop_t=103-108s lead_id=3858 lead_speed_before=39.32372283935547 during=9.300129890441895 ego_stopped
+HardBreakRoute_3,A,HardBreakRoute,Y,N/A(no owned),N,N,Y(stop),stop_t=762-770s no_front_vehicle_in_token
+HardBreakRoute_4,A,HardBreakRoute,Y,N/A(no owned),N,N,Y(stop),stop_t=762-770s no_front_vehicle_in_token
+HardBreakRoute_5,A,HardBreakRoute,Y,N/A(no owned),N,N,Y(stop),stop_t=1161-1162s no_front_vehicle_in_token
+HardBreakRoute_6,A,HardBreakRoute,Y,N/A(no owned),Y,Y,Y(stop),stop_t=1313-1320s lead_id=5432 lead_speed_before=36.94011688232422 during=36.94011688232422 ego_stopped
+HardBreakRoute_7,A,HardBreakRoute,Y,N(owned),N,?,Y(slow),no_full_stop ego_min=1.3

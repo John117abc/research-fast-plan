@@ -1,0 +1,4 @@
+route_id,town,source_file,covered_hardbreak,covered_parkingcutin,covered_vehicleturning,covered_pedestrian,total_instances,selected_order
+3,Town12,routes_training.xml,10,12,2,2,26,1
+14,Town12,routes_training.xml,7,0,5,4,16,2
+1,Town12,routes_training.xml,5,1,3,2,11,3

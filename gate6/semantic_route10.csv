@@ -1,0 +1,20 @@
+config_name,group,type,triggered,actor_mapping,in_token,interaction,ego_response,detail
+ParkingCutIn_3,B,ParkingCutIn,Y,Y,Y,Y,Y(stop),"obs_t=1063-1126s min_dist=3.2m close_frames=250 ego_min=-7.159239810130879 lateral_cross=[(3701, 4.6, -0.0, 0.0)]"
+ParkingCutIn_4,B,ParkingCutIn,Y,Y,Y,Y,Y(stop),"obs_t=1159-1234s min_dist=3.1m close_frames=115 ego_min=-0.011751257047102994 lateral_cross=[(3704, 3.1, -0.0, 0.0)]"
+PedestrianCrossing_4,D,PedestrianCrossing,Y,Y,Y,Y,Y(stop),"obs_t=1246-1256s min_dist=4.4m close_frames=74 ego_min=0.014322921821880016 lateral_cross=[(3710, 3.6, -5.3, 0.1), (3706, 4.6, -5.9, 0.1)]"
+ParkingCutIn_5,B,ParkingCutIn,Y,Y,Y,Y,Y(slow),"obs_t=1693-1704s min_dist=3.1m close_frames=53 ego_min=1.519617840362814 lateral_cross=[(3713, 43.4, -0.0, 0.0)]"
+PedestrianCrossing_5,D,PedestrianCrossing,Y,Y,Y,Y,Y(stop),"obs_t=1685-1693s min_dist=5.2m close_frames=79 ego_min=0.01085606384455546 lateral_cross=[(3738, 3.5, -5.5, 0.1)]"
+PedestrianCrossing_1,D,PedestrianCrossing,Y,Y,Y,Y,Y(stop),"obs_t=141-150s min_dist=4.1m close_frames=67 ego_min=0.3177165249897116 lateral_cross=[(3930, 3.6, -5.4, 0.0), (3926, 4.6, -5.6, 0.0)]"
+VehicleTurningRoute_1,C,VehicleTurningRoute,Y,Y,Y,Y,Y(stop),obs_t=706-735s min_dist=2.5m close_frames=95 ego_min=-0.02355325387470792 lateral_cross=[]
+ParkingCutIn_2,B,ParkingCutIn,Y,Y,Y,Y,Y(stop),obs_t=684-704s min_dist=3.1m close_frames=93 ego_min=0.0028996004275785676 lateral_cross=[]
+ParkingCutIn_1,B,ParkingCutIn,Y,Y,Y,Y,Y(stop),"obs_t=237-256s min_dist=3.2m close_frames=81 ego_min=-0.013475403878188671 lateral_cross=[(4276, 3.2, -0.0, 0.0)]"
+PedestrianCrossing_2,D,PedestrianCrossing,Y,Y,Y,Y,Y(stop),"obs_t=640-648s min_dist=4.4m close_frames=69 ego_min=0.007595442809018805 lateral_cross=[(4443, 3.6, -5.4, 0.2), (4439, 4.6, -4.6, 0.0)]"
+PedestrianCrossing_3,D,PedestrianCrossing,Y,Y,Y,Y,Y(stop),"obs_t=879-889s min_dist=4.6m close_frames=64 ego_min=0.004109632936991075 lateral_cross=[(4653, 4.6, -5.7, 0.1), (4657, 3.6, -5.1, 0.1)]"
+VehicleTurningRoute_2,C,VehicleTurningRoute,Y,Y,Y,Y,Y(stop),"obs_t=917-1005s min_dist=2.1m close_frames=153 ego_min=-0.01700679859722264 lateral_cross=[(4794, 17.5, -2.9, 0.2)]"
+HardBreakRoute_5,A,HardBreakRoute,Y,N/A(no owned),Y,Y,Y(stop),stop_t=10-16s lead_id=3827 lead_speed_before=None during=0.0 ego_stopped
+HardBreakRoute_4,A,HardBreakRoute,Y,N/A(no owned),Y,Y,Y(stop),stop_t=10-16s lead_id=3827 lead_speed_before=None during=0.0 ego_stopped
+HardBreakRoute_2,A,HardBreakRoute,Y,N/A(no owned),Y,Y,Y(stop),stop_t=116-117s lead_id=3727 lead_speed_before=0.0 during=0.0 ego_stopped
+HardBreakRoute_1,A,HardBreakRoute,Y,N/A(no owned),Y,Y,Y(stop),stop_t=116-117s lead_id=3727 lead_speed_before=0.0 during=0.0 ego_stopped
+HardBreakRoute_3,A,HardBreakRoute,Y,N/A(no owned),Y,Y,Y(stop),stop_t=659-660s lead_id=4692 lead_speed_before=17.884567260742188 during=3.3153858184814453 ego_stopped
+HardBreakRoute_6,A,HardBreakRoute,Y,N/A(no owned),N,N,Y(stop),stop_t=1388-1389s no_front_vehicle_in_token
+HardBreakRoute_7,A,HardBreakRoute,Y,N/A(no owned),N,N,Y(stop),stop_t=1388-1389s no_front_vehicle_in_token

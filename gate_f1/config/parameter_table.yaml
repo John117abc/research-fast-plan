@@ -1,0 +1,75 @@
+# F1 deterministic parameter table v1.2 (NOT CARLA random seeds).
+# Constraint discovered by smoke: CARLA spawn on the frozen segment is only
+# reliable for station s <= ~80 (segment extends to 208 but spawn off-drivable
+# geometry beyond ~85). All static/lead/cross objects therefore stay inside the
+# safe station window; D1 left "stream" is a slow platoon (1.5 m/s, stations
+# 30..78) that keeps the merge window occupied through the whole horizon.
+# A-class d_conflict stays >=45 so the bracketing window precedes reachability.
+
+groups:
+  - id: 1
+    v_target: 6.0
+    d_conflict: 45.0
+    L_block: 40.0
+    v_lead: 2.5
+    s0_lead: 46.0
+  - id: 2
+    v_target: 7.0
+    d_conflict: 45.0
+    L_block: 46.0
+    v_lead: 3.0
+    s0_lead: 50.0
+  - id: 3
+    v_target: 8.0
+    d_conflict: 45.0
+    L_block: 62.0
+    v_lead: 3.5
+    s0_lead: 62.0
+  - id: 4
+    v_target: 9.0
+    d_conflict: 45.0
+    L_block: 66.0
+    v_lead: 4.0
+    s0_lead: 66.0
+  - id: 5
+    v_target: 6.0
+    d_conflict: 50.0
+    L_block: 44.0
+    v_lead: 3.5
+    s0_lead: 48.0
+  - id: 6
+    v_target: 7.0
+    d_conflict: 50.0
+    L_block: 48.0
+    v_lead: 2.5
+    s0_lead: 52.0
+  - id: 7
+    v_target: 8.0
+    d_conflict: 55.0
+    L_block: 62.0
+    v_lead: 3.0
+    s0_lead: 62.0
+  - id: 8
+    v_target: 9.0
+    d_conflict: 55.0
+    L_block: 66.0
+    v_lead: 3.5
+    s0_lead: 66.0
+  - id: 9
+    v_target: 7.0
+    d_conflict: 60.0
+    L_block: 50.0
+    v_lead: 4.0
+    s0_lead: 54.0
+  - id: 10
+    v_target: 8.0
+    d_conflict: 60.0
+    L_block: 62.0
+    v_lead: 2.5
+    s0_lead: 62.0
+
+queue_c0_offsets: [0, 7, 14]       # stopped queue spacing (added to L_block)
+queue_c1_offsets: [0, 7, 14]       # left-lane stopped queue (D2)
+d1:                                # left-lane slow "no-safe-gap" platoon
+  cl_stations: [30, 42, 54, 66, 78]
+  cl_speed: 1.5
