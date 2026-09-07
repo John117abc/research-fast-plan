@@ -67,10 +67,9 @@ def cross_stall_occ(spec):
         slot(occ, i, d - e0, lat, hl=0.3 if spec["kind"] == "ped" else 2.2,
              hw=0.35 if spec["kind"] == "ped" else 1.0)
         if spec.get("left_occ") or str(spec.get("cell", "")).endswith("_occ"):
-            for st in PLAT_ST:
-                s2 = st + 1.5 * t - e0
-                if abs(s2) < 190:
-                    slot(occ, i, s2, 3.25, hl=2.0, hw=1.0)
+            for st in range(12, 126, 14):
+                s2 = st - e0
+                slot(occ, i, s2, 3.25, hl=2.0, hw=1.0)
     return occ
 
 
@@ -91,10 +90,9 @@ def lead_occ(spec, left_occ):
         t = i * DT
         slot(occ, i, lead_s(t) - e0, 0.0, hl=2.2, hw=1.0)
         if left_occ:
-            for st in PLAT_ST:
-                s2 = st + 1.5 * t - e0
-                if abs(s2) < 190:
-                    slot(occ, i, s2, 3.25, hl=2.0, hw=1.0)
+            for st in range(12, 126, 14):
+                s2 = st - e0
+                slot(occ, i, s2, 3.25, hl=2.0, hw=1.0)
     return occ
 
 
@@ -116,10 +114,9 @@ def block_occ(spec, cont):
         for off in (0, 7, 14):
             slot(occ, i, L + off - e0, 0.0, hl=2.2, hw=1.0)
         if cont:
-            for st in PLAT_ST:
-                s2 = st + 1.5 * t - e0
-                if abs(s2) < 190:
-                    slot(occ, i, s2, 3.25, hl=2.0, hw=1.0)
+            for st in range(12, 126, 14):
+                s2 = st - e0
+                slot(occ, i, s2, 3.25, hl=2.0, hw=1.0)
     return occ
 
 
@@ -188,7 +185,7 @@ def build_rows():
         for v, d in ((6, 50), (6, 54), (7, 54), (7, 58), (8, 58), (8, 64)):
             push("cross_stall", {"ego_v": v, "d_conflict": d, "kind": kind})
     for kind in kinds:
-        for v, d in ((6, 52), (6, 58), (7, 56), (7, 62), (8, 60), (8, 66)):
+        for v, d in ((6, 52), (6, 58), (7, 56), (7, 62), (8, 60), (8, 64)):
             push("cross_stall_occ", {"ego_v": v, "d_conflict": d, "kind": kind})
     # lead_opt / lead_nec / lead_cont
     for v, s0, vl in ((6, 48, 2.5), (6, 50, 3.5), (7, 52, 2.5), (7, 54, 4.0),

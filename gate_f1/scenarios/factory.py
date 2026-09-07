@@ -320,9 +320,31 @@ def _move_on_c0(amap, actor, s, yaw=None):
     actor.set_target_velocity(_c.Vector3D(0, 0, 0))
 
 
-def _lead_stop(world, amap, row, name, left_occ):
+def _cl_static_queue(world, amap, scene, start=10, step=14, n=9):
+    """Anchor a static CL queue [start .. start+step*(n-1)] onto a scene;
+    wraps scene.step so the queue is re-anchored every tick."""
+    import carla as _c
+    qs = []
+    for k in range(n):
+        st = start + step * k
+        q = _static_prop(world, amap, "anycar", st, axis="cl")
+        qs.append(q)
+    scene.props.extend(qs)
+    scene._clq = qs
+    base = scene.step
+
+    def step(amap, trel):
+        base(amap, trel)
+        for q in qs:
+            q["actor"].set_transform(q["tf"])
+            q["actor"].set_target_velocity(_c.Vector3D(0, 0, 0))
+    scene.step = step
+    return scene
+
+
+def _lead_stop(world, amap, row, name, left_occ, left_mode="moving"):
     """G1/G2: lead cruises v0 for tc s, brakes at a to a full stop, stays
-    stopped. left_occ=True adds the CL slow platoon (Contingency)."""
+    stopped. left_occ=True adds CL traffic (moving platoon or static queue)."""
     import carla as _c
     s_c = Scene()
     s_c.name = name
@@ -331,7 +353,8 @@ def _lead_stop(world, amap, row, name, left_occ):
     p = _static_prop(world, amap, "anycar", s0, axis="c0")
     s_c.props = [p]
     s_c.meta = {"lead": {"s0": s0, "v0": v0, "tc": tc, "a": a}}
-    if left_occ:
+    moving = left_occ and left_mode == "moving"
+    if moving:
         D1 = PARAMS["d1"]
         for st in D1["cl_stations"]:
             q = _static_prop(world, amap, "anycar", st, axis="cl")
@@ -351,7 +374,7 @@ def _lead_stop(world, amap, row, name, left_occ):
     def step(amap, trel):
         # stopped-lead props[0] follows law; CL platoon (if any) moves slow
         _move_on_c0(amap, s_c.props[0]["actor"], s_lead(trel))
-        if left_occ:
+        if moving:
             for q in s_c.props[1:]:
                 s = min(q["stream_s0"] + q["stream_v"] * trel, 200.0)
                 idx = max(0, min(int(round(s)), len(geo.SEG["cl"]) - 1))
@@ -361,6 +384,8 @@ def _lead_stop(world, amap, row, name, left_occ):
                     _c.Rotation(yaw=geo.heading_deg())))
                 q["actor"].set_target_velocity(_c.Vector3D(0, 0, 0))
     s_c.step = step
+    if left_occ and left_mode == "queue":
+        _cl_static_queue(world, amap, s_c)
     return s_c
 
 
@@ -464,7 +489,7 @@ def _cross_stall(world, amap, g, kind, left_occ=False):
         q.set_target_velocity(_c.Vector3D(0, 0, 0))
     s_c.step = step
     if left_occ:
-        _cl_platoon(world, amap, s_c)
+        _cl_static_queue(world, amap, s_c)
     return s_c
 
 
@@ -475,26 +500,28 @@ def make_f3(world, amap, spec):
     ego_v, d_conflict, s0, v_lead, v0, tc, a, occ_s, t_leave, away_v,
     left_occ."""
     cell = spec["cell"]
-    if cell in ("cross_clear", "cross_stall"):
+    if cell in ("cross_clear", "cross_stall", "cross_stall_occ"):
         kind = "walker" if spec.get("kind") == "ped" else "vehicle"
         g = {"v_target": spec["ego_v"], "d_conflict": spec["d_conflict"]}
         if cell == "cross_clear":
             return _crossing(world, amap, g, kind)
         return _cross_stall(world, amap, g, kind,
-                            left_occ=spec.get("left_occ", False))
+                            left_occ=(cell == "cross_stall_occ"))
     if cell == "lead_opt":
         return _slow_lead(world, amap,
                           {"v_target": spec["ego_v"], "s0_lead": spec["s0"],
                            "v_lead": spec["v_lead"]}, "C")
     if cell in ("lead_nec", "lead_cont"):
         return _lead_stop(world, amap, spec, spec["cell"],
-                          left_occ=(cell == "lead_cont"))
+                          left_occ=(cell == "lead_cont"),
+                          left_mode="queue" if cell == "lead_cont" else "moving")
     if cell == "block_nec":
         return _static_blocker(world, amap,
                                {"v_target": spec["ego_v"], "L_block": spec["L"]}, "B")
     if cell == "block_cont":
-        return _d1(world, amap,
-                   {"v_target": spec["ego_v"], "L_block": spec["L"]}, "D1")
+        s = _static_blocker(world, amap,
+                            {"v_target": spec["ego_v"], "L_block": spec["L"]}, "B")
+        return _cl_static_queue(world, amap, s)
     if cell == "temp_opt":
         return _temp_occupant(world, amap, spec, "T")
     raise KeyError(cell)
