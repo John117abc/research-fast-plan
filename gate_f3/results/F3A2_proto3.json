@@ -1,0 +1,39 @@
+{
+ "proto": 3,
+ "phase": true,
+ "aug": true,
+ "folds": {
+  "cross": {
+   "k1": 0.8611111111111112,
+   "per": {
+    "LateralOptional": 0.583,
+    "LateralNecessary": 1.0,
+    "Contingency/Wait": 1.0
+   },
+   "n": 36
+  },
+  "lead": {
+   "k1": 0.6388888888888888,
+   "per": {
+    "LateralOptional": 0.583,
+    "LateralNecessary": 0.333,
+    "Contingency/Wait": 1.0
+   },
+   "n": 36
+  },
+  "lead_geometry": {
+   "d_leadNec_blockNec": 0.404,
+   "d_leadNec_leadOpt": 0.078,
+   "inverted": false
+  },
+  "block": {
+   "k1": 1.0,
+   "per": {
+    "LateralOptional": NaN,
+    "LateralNecessary": 1.0,
+    "Contingency/Wait": 1.0
+   },
+   "n": 24
+  }
+ }
+}
