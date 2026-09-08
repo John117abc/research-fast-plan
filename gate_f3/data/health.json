@@ -1,0 +1,17 @@
+{
+ "n": 108,
+ "quadrant_dist": {
+  "Contingency/Wait": 36,
+  "LateralNecessary": 36,
+  "LateralOptional": 36
+ },
+ "mech_dist": {
+  "block": 24,
+  "cross": 36,
+  "lead": 36,
+  "temp": 12
+ },
+ "mismatch": [],
+ "pl_mask_rows": 108,
+ "pf_low_rows": 0
+}

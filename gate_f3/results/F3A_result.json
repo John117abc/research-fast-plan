@@ -1,0 +1,27 @@
+{
+ "folds": {
+  "cross": {
+   "n_blind": 36,
+   "k1": 0.8055555555555556
+  },
+  "lead": {
+   "n_blind": 36,
+   "k1": 0.5277777777777778
+  },
+  "block": {
+   "n_blind": 24,
+   "k1": 1.0
+  }
+ },
+ "k1_overall": 0.75,
+ "k1_per_struct": {
+  "LateralOptional": 0.75,
+  "LateralNecessary": 0.6388888888888888,
+  "Contingency/Wait": 0.8611111111111112
+ },
+ "g2_cross_mech_dist": {
+  "same": 0.5097560286521912,
+  "diff": 1.415331482887268,
+  "holds": true
+ }
+}

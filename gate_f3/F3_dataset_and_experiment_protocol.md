@@ -131,3 +131,22 @@ gate_f3/results/F3A_result.md. All generator/model scripts pinned in gate_f3/.
 1. implement crossing-stall / crossing+leftocc builders + row tables (frozen);
 2. generate dataset to quota; 3. run offline metrics;
 4. implement F3-A model + split + gates; 5. execute & report PASS/FAIL.
+
+## 9. FROZEN F3-A training configuration (2026-09-08, before any Blind open)
+Dataset: 108 confirmatory samples (9 cells x 12), empirical labels.
+Health check passed: 108/108 annotated, structure-balanced (36 each),
+intent-match 100%, no Pfree<eps rows. Splits: test fold mechanism in
+{cross, lead, block}; train = other two + temp (72-84); blind cross/lead
+contain all 3 structures; blind block has Necess/Contingency (physics).
+Input (4 channels, t=0.5..10, 20 steps): ch0=P0/Pfree, ch1=PL/Pfree (only
+where Pfree>eps), ch2=M0, ch3=ML feasibility masks. Per-channel z-score
+computed on TRAIN only (frozen transform).
+Model (frozen): 1-D conv 4->16->32 (k5, ReLU), global mean+max concat,
+MLP [128,64] -> L2-normalized embedding d=8. torch, seed 0.
+Loss (frozen): supervised InfoNCE temperature 0.1; positives = same structure
+AND different mechanism within train only; in-batch negatives = different
+structure. Adam lr 1e-3, wd 1e-4, epochs 200, batch 64, no early stopping and
+NO hyperparameter changes after any fold is seen. kNN eval: euclidean in
+L2-normalized embedding, k=1 (k=5 also reported); queries = Blind samples,
+pool = Train samples (cross-mechanism by construction).
+Gates frozen in section 5; all three folds executed once in one sweep.
