@@ -1,0 +1,15 @@
+{
+ "n_states": 108,
+ "n_pairs": 5778,
+ "n_cross_pairs": 3888,
+ "bottom_frac": 0.1,
+ "d0_threshold": 0.0320277,
+ "n_peq": 11,
+ "n_matched": 11,
+ "n_fine_mechanism_pairs": 6,
+ "n_coarse_combos": 3,
+ "peq_d0_min": 0.0,
+ "peq_d0_median": 0.006026,
+ "peq_d0_max": 0.024037,
+ "g1_ok": false
+}

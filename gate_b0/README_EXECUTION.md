@@ -28,6 +28,20 @@ curves `{V0^u(t), VL^u(t)}` (320 values/state). Result: R0 collapse resolved
 1.12 vs undefined for R0; block_nec current-corridor half-decay at 4.5 s vs
 9.0 s for lead_nec). No closure Gate, no training, no confirmatory data.
 
+## B0-R2 R1 one-step closure (stopped at G1)
+
+```bash
+conda run -n plant2 python -u gate_b0/scripts/11_build_r1_successors.py   # ~20 min
+conda run -n plant2 python -u gate_b0/scripts/12_r2_pairs.py
+conda run -n plant2 python -u gate_b0/scripts/15_r2_stop_report.py
+```
+
+`|Peq| = 11 < 15` (only 11 mutual cross-mechanism NN pairs exist), so per
+protocol sections 2/8 the round stops before closure: no `r2_closure_*.csv`,
+no two-step. Coverage was fine (6 fine pairs, 3 coarse combos). See
+`results/r2/B0_R2_result.md`.
+
+
 
 ## Deviations from the plan text (recorded, per constraint 6)
 

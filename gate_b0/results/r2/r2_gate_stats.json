@@ -1,0 +1,21 @@
+{
+ "n_peq": 11,
+ "n_matched": 11,
+ "n_fine_mechanism_pairs": 6,
+ "n_coarse_combos": 3,
+ "peq_d0_min": 0.0,
+ "peq_d0_median": 0.006026,
+ "peq_d0_max": 0.024037,
+ "d0_threshold": 0.0320277,
+ "cross_d0_p10": 0.0320277,
+ "cross_d0_median": 0.155352,
+ "gates": {
+  "G1_candidate_equivalence": false,
+  "G2_one_step_closure": null,
+  "G3_no_extra_mech_loss": null,
+  "G4_keeps_separation": null
+ },
+ "overall_pass": false,
+ "stopped_before_closure": true,
+ "stop_reason": "|Peq|=11 < 15 (frozen floor); protocol section 2/8"
+}

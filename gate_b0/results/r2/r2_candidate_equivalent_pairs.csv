@@ -1,0 +1,12 @@
+state_i,state_j,coarse_i,coarse_j,fine_i,fine_j,group_i,group_j,same_coarse,same_fine,same_param_group,ego_speed_diff,d0_mean,pair_id,pair_type
+block_cont_r10,cross_stall_occ_r3,block_or_occupancy,cross,block_cont,cross_stall_occ,block_cont|v7|L6,cross_stall_occ|v7|d7,0,0,0,0.0,0.024037,block_cont_r10__cross_stall_occ_r3,cross_candidate
+block_cont_r7,cross_stall_occ_r11,block_or_occupancy,cross,block_cont,cross_stall_occ,block_cont|v8|L7,cross_stall_occ|v8|d7,0,0,0,0.0,0.0,block_cont_r7__cross_stall_occ_r11,cross_candidate
+block_nec_r10,cross_stall_r9,block_or_occupancy,cross,block_nec,cross_stall,block_nec|v7|L6,cross_stall|v7|d6,0,0,0,0.0,0.006026,block_nec_r10__cross_stall_r9,cross_candidate
+block_nec_r12,cross_stall_r12,block_or_occupancy,cross,block_nec,cross_stall,block_nec|v6|L6,cross_stall|v8|d8,0,0,0,2.0,0.00498,block_nec_r12__cross_stall_r12,cross_candidate
+block_nec_r4,cross_stall_r11,block_or_occupancy,cross,block_nec,cross_stall,block_nec|v7|L6,cross_stall|v8|d7,0,0,0,1.0,0.003178,block_nec_r4__cross_stall_r11,cross_candidate
+cross_stall_r2,lead_nec_r1,cross,lead,cross_stall,lead_nec,cross_stall|v6|d6,lead_nec|v6|s5,0,0,0,0.0,0.007857,cross_stall_r2__lead_nec_r1,cross_candidate
+cross_stall_r6,temp_opt_r9,cross,block_or_occupancy,cross_stall,temp_opt,cross_stall|v8|d8,temp_opt|v8|o8,0,0,0,0.0,0.003806,cross_stall_r6__temp_opt_r9,cross_candidate
+cross_stall_occ_r10,lead_cont_r11,cross,lead,cross_stall_occ,lead_cont,cross_stall_occ|v7|d7,lead_cont|v7|s6,0,0,0,0.0,0.016832,cross_stall_occ_r10__lead_cont_r11,cross_candidate
+cross_stall_occ_r2,lead_cont_r1,cross,lead,cross_stall_occ,lead_cont,cross_stall_occ|v6|d7,lead_cont|v6|s5,0,0,0,0.0,0.001063,cross_stall_occ_r2__lead_cont_r1,cross_candidate
+lead_opt_r11,temp_opt_r2,lead,block_or_occupancy,lead_opt,temp_opt,lead_opt|v6|s6,temp_opt|v6|o7,0,0,0,0.0,0.006923,lead_opt_r11__temp_opt_r2,cross_candidate
+lead_opt_r12,temp_opt_r3,lead,block_or_occupancy,lead_opt,temp_opt,lead_opt|v7|s7,temp_opt|v6|o8,0,0,0,1.0,0.006983,lead_opt_r12__temp_opt_r3,cross_candidate
