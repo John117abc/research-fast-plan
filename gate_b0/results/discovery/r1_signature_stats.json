@@ -1,0 +1,66 @@
+{
+ "stats": {
+  "n_states": 108,
+  "n_values": 320,
+  "unique_r3": 107,
+  "largest_cluster_r3": 2,
+  "unique_r2": 107,
+  "largest_cluster_r2": 2,
+  "all_ones_like": 0
+ },
+ "separability_r1": {
+  "lead_nec|lead_opt": {
+   "ratio": 1.1217,
+   "between": 0.01695,
+   "within": 0.01511
+  },
+  "block_nec|lead_opt": {
+   "ratio": 2.6432,
+   "between": 0.08202,
+   "within": 0.03103
+  },
+  "block_nec|lead_nec": {
+   "ratio": 3.1288,
+   "between": 0.08386,
+   "within": 0.0268
+  },
+  "block_nec|cross_stall": {
+   "ratio": 1.5452,
+   "between": 0.04616,
+   "within": 0.02987
+  },
+  "cross_stall|lead_opt": {
+   "ratio": 2.1798,
+   "between": 0.03962,
+   "within": 0.01818
+  },
+  "cross_stall|lead_nec": {
+   "ratio": 2.9004,
+   "between": 0.04046,
+   "within": 0.01395
+  }
+ },
+ "separability_r0": {
+  "lead_nec|lead_opt": NaN,
+  "block_nec|lead_opt": 1.2827,
+  "block_nec|lead_nec": 1.2827,
+  "block_nec|cross_stall": 1.1947,
+  "cross_stall|lead_opt": 1.0508,
+  "cross_stall|lead_nec": 1.0508
+ },
+ "verdict": {
+  "frozen_rule": {
+   "max_cluster": 5,
+   "min_distinct": 90,
+   "min_sep_ratio": 1.0
+  },
+  "diversity_recovered": true,
+  "lead_opt_vs_lead_nec_separated": true,
+  "sep_ratio_r1": 1.1217,
+  "sep_ratio_r0": NaN,
+  "decay_t_half_U2_block_nec": 9,
+  "decay_t_half_U2_lead_opt": null,
+  "decay_t_half_U2_lead_nec": 18,
+  "overall": "R1_DEGENERACY_RESOLVED"
+ }
+}

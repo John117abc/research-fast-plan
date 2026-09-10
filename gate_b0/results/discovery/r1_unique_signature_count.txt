@@ -1,0 +1,1 @@
+unique_r3=107 largest_cluster_r3=2 unique_r2=107 largest_cluster_r2=2 all_ones_like=0

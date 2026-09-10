@@ -150,3 +150,41 @@ def run_probe(init_state, ax, lateral, occ, cor, n_steps=N, forced_steps=None):
             break
     best = max((s[0] for s in states), default=-1.0)
     return {"valid": True, "successor": successor, "best": best, "n_final": len(states)}
+
+
+def run_probe_curves(init_state, ax, lateral, occ, cor, n_steps=N, forced_steps=None):
+    """Per-step best-ever frontiers for the two branches after forcing u.
+
+    Returns dict(valid, p0, pL) where p0/pL are length-n_steps lists (t=0.5..10s)
+    of best-ever max s over KEEP / completed-LEFT states, -1 if never feasible.
+    """
+    fs = FORCED_STEPS if forced_steps is None else forced_steps
+    chain = [init_state]
+    st = init_state
+    for k in range(1, fs + 1):
+        st = _apply_fixed(st, ax, lateral, k, occ, cor)
+        if st is None:
+            return {"valid": False, "p0": [-1.0] * n_steps, "pL": [-1.0] * n_steps}
+        chain.append(st)
+    p0 = [None] * (n_steps + 1)
+    pL = [None] * (n_steps + 1)
+    best0 = bestL = -1.0
+    for k in range(1, fs + 1):
+        s, v, m, tau = chain[k]
+        if m == KEEP:
+            best0 = max(best0, s)
+        if m == LEFT:
+            bestL = max(bestL, s)
+        p0[k], pL[k] = best0, bestL
+    states = [st]
+    for i in range(fs + 1, n_steps + 1):
+        exp = []
+        for s in states:
+            exp.extend(_expand_all(s, i, occ, cor))
+        states = _trim(exp) if exp else []
+        if states:
+            m0 = max((s[0] for s in states if s[2] == KEEP), default=-1.0)
+            mL = max((s[0] for s in states if s[2] == LEFT), default=-1.0)
+            best0, bestL = max(best0, m0), max(bestL, mL)
+        p0[i], pL[i] = best0, bestL
+    return {"valid": True, "p0": p0[1:], "pL": pL[1:]}

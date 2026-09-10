@@ -1,0 +1,7 @@
+pair,ratio_R1,between_R1,within_R1,ratio_R0
+lead_nec|lead_opt,1.1217,0.01695,0.01511,nan
+block_nec|lead_opt,2.6432,0.08202,0.03103,1.2827
+block_nec|lead_nec,3.1288,0.08386,0.0268,1.2827
+block_nec|cross_stall,1.5452,0.04616,0.02987,1.1947
+cross_stall|lead_opt,2.1798,0.03962,0.01818,1.0508
+cross_stall|lead_nec,2.9004,0.04046,0.01395,1.0508

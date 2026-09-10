@@ -15,6 +15,20 @@ conda run -n plant2 python -u gate_b0/scripts/06_make_figures.py
 Discovery result: **G0 PASS, G1 FAIL** -> Gate B0 discovery FAIL; per protocol
 section 24 Case A, stop and do not train a network.
 
+## B0-R1 representation validation (development only)
+
+```bash
+conda run -n plant2 python -u gate_b0/scripts/09_build_r1.py       # ~4 min
+conda run -n plant2 python -u gate_b0/scripts/10_r1_diagnostics.py
+```
+
+R1 replaces R0's scalar max-progress with per-action, per-branch progress
+curves `{V0^u(t), VL^u(t)}` (320 values/state). Result: R0 collapse resolved
+(unique 107/108, largest cluster 2, all-ones 0; lead_opt vs lead_nec ratio
+1.12 vs undefined for R0; block_nec current-corridor half-decay at 4.5 s vs
+9.0 s for lead_nec). No closure Gate, no training, no confirmatory data.
+
+
 ## Deviations from the plan text (recorded, per constraint 6)
 
 1. The plan lists `gate_f0/feasible/{corridor_builder,lane_change_primitive,
