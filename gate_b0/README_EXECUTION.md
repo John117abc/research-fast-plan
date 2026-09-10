@@ -72,6 +72,20 @@ met; C5 not testable (all successors feasible -> feasibility agreement =1.0).
 Recorded as **B0-R3 DEVELOPMENT SUPPORT**, not a confirmatory PASS. See
 `results/r3/B0_R3_result.md`.
 
+## B0-R3 audit (overlap confound check; no Gate)
+
+```bash
+conda run -n plant2 python -u gate_b0/scripts/21_r3_audit.py   # ~42 s
+```
+
+Pure diagnostic. (A) all 8 actions show a monotone d0->d1 relation (rho
+0.75-0.95). (B) different actions do change the successor relation
+(within-state cross-action distance mean 0.19). (C) the correlation is NOT a
+window-overlap artifact: non-overlap d0(0.5-3s) vs d1(8-11s) rho=0.846, and
+successor-tail-only (abs 10-11s) rho=0.924. (D) matching is fair
+(|d0 diff| median 7e-5, 100% within 0.01). See `results/r3/audit/B0_R3_AUDIT.md`.
+
+
 
 
 
