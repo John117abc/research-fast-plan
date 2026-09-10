@@ -41,6 +41,21 @@ protocol sections 2/8 the round stops before closure: no `r2_closure_*.csv`,
 no two-step. Coverage was fine (6 fine pairs, 3 coarse combos). See
 `results/r2/B0_R2_result.md`.
 
+## B0-R2D difference-attribution diagnostic (no Gate)
+
+```bash
+conda run -n plant2 python -u gate_b0/scripts/16_r2d_diagnostics.py   # ~6 s
+```
+
+Pure analysis of the existing R1 signatures/pairs (no engine runs). Compares
+A=11 candidates, B=next 39 cross pairs, C=39 mid-distance cross pairs.
+Conclusion: **Result A (temporal detail)**. A and B share near-identical
+action ranking (rho 0.999/0.996), branch existence (1.0) and opportunity trend
+(1.0); B's residual is largely a <=2 s time offset (R_time median 0.35) and NOT
+amplitude (R_scale negative). C is clearly different (d_raw ~35x, rho 0.82,
+exist 0.78, dVL 0.47). See `results/r2d/B0_R2D_result.md`.
+
+
 
 
 ## Deviations from the plan text (recorded, per constraint 6)
