@@ -1,0 +1,4 @@
+mechanism_pair,n,spearman,D1_median_Q1,D1_median_Q5
+cross|lead,1296,0.9805,0.01502,0.29149
+block_or_occupancy|cross,1296,0.952,0.02084,0.2946
+block_or_occupancy|lead,1296,0.9468,0.01484,0.29776

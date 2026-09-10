@@ -55,6 +55,24 @@ action ranking (rho 0.999/0.996), branch existence (1.0) and opportunity trend
 amplitude (R_scale negative). C is clearly different (d_raw ~35x, rho 0.82,
 exist 0.78, dVL 0.47). See `results/r2d/B0_R2D_result.md`.
 
+## B0-R3 continuous one-step closure (development support)
+
+```bash
+conda run -n plant2 python -u gate_b0/scripts/17_r3_build_cache.py
+conda run -n plant2 python -u gate_b0/scripts/18_r3_pairs_closure.py
+conda run -n plant2 python -u gate_b0/scripts/19_r3_stats.py      # ~37 s
+conda run -n plant2 python -u gate_b0/scripts/20_r3_report.py
+```
+
+All cross-mechanism pairs (3888) + same-mechanism matched controls; successor
+R1 read from cache (864 entries, all valid). Result: Spearman(d0,D1_mean)=0.958
+(95% cluster-bootstrap CI [0.943,0.970]); monotone Q1<...<Q5 (median D1
+0.016->0.295); cross/same matched ratio 0.988 (CI spans 0). Conditions C1-C4
+met; C5 not testable (all successors feasible -> feasibility agreement =1.0).
+Recorded as **B0-R3 DEVELOPMENT SUPPORT**, not a confirmatory PASS. See
+`results/r3/B0_R3_result.md`.
+
+
 
 
 

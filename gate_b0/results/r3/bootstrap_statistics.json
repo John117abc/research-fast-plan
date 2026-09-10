@@ -1,0 +1,45 @@
+{
+ "n_cross_pairs": 3888,
+ "n_matched": 3888,
+ "spearman_overall": 0.9575,
+ "spearman_CI": {
+  "median": 0.95724,
+  "lo95": 0.94275,
+  "hi95": 0.96989,
+  "n": 10000
+ },
+ "median_D1_Q1": 0.01576,
+ "median_D1_Q5": 0.2947,
+ "q1_minus_q5_CI": {
+  "median": -0.27891,
+  "lo95": -0.28417,
+  "hi95": -0.27377,
+  "n": 10000
+ },
+ "median_D1_cross": 0.12918,
+ "median_D1_same_matched": 0.13076,
+ "cross_minus_same_CI": {
+  "median": -0.00404,
+  "lo95": -0.06501,
+  "hi95": 0.02817,
+  "n": 10000
+ },
+ "matched_ratio": 0.9879,
+ "feas_agree_Q1": 1.0,
+ "feas_agree_Q5": 1.0,
+ "feas_q1_minus_q5_CI": {
+  "median": 0.0,
+  "lo95": 0.0,
+  "hi95": 0.0,
+  "n": 10000
+ },
+ "conditions": {
+  "C1_continuous_rho>=0.60_and_CIlow>0.40": true,
+  "C2_Q1<=0.5*Q5": true,
+  "C3_two_of_three_mech_rho>0.50": true,
+  "C4_matched_ratio<=1.25": true,
+  "C5_feas_Q1>Q5": false
+ },
+ "all_conditions_met": false,
+ "note": "DEVELOPMENT support only; not a confirmatory PASS."
+}
