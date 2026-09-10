@@ -1,0 +1,4 @@
+state_i,state_j,coarse_i,coarse_j,fine_i,fine_j,group_i,group_j,same_coarse,same_fine,same_param_group,ego_speed_diff,d0_mean,d0_max,pair_id,pair_type
+block_cont_r7,cross_stall_occ_r11,block_or_occupancy,cross,block_cont,cross_stall_occ,block_cont|v8|L7,cross_stall_occ|v8|d7,0,0,0,0.0,0.0,0.0,block_cont_r7__cross_stall_occ_r11,cross_candidate
+block_nec_r10,cross_stall_r1,block_or_occupancy,cross,block_nec,cross_stall,block_nec|v7|L6,cross_stall|v6|d6,0,0,0,1.0,0.0,0.0,block_nec_r10__cross_stall_r1,cross_candidate
+cross_stall_r11,temp_opt_r12,cross,block_or_occupancy,cross_stall,temp_opt,cross_stall|v8|d7,temp_opt|v8|o7,0,0,0,0.0,0.0,0.0,cross_stall_r11__temp_opt_r12,cross_candidate

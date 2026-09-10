@@ -1,0 +1,79 @@
+# Gate B0 frozen configuration. Written BEFORE any B0 result is inspected.
+# Do not edit after the first discovery run except via a recorded diff.
+
+data:
+  raw_root: gate_f3/data/raw
+  road_segment: gate_f0/road_segment.json
+  dt: 0.5
+  horizon_s: 10.0
+  record_s: 12.0          # F3 rows cover t0..t0+12s at 0.5s grid
+  lane_filter_margin: 4.0 # keep actors with |lat| <= lane_w + margin (as F1 compute.py)
+
+engine:
+  accel: [-4.0, -2.0, 0.0, 1.5]
+  v_max: 12.0
+  T_LC: 3.0
+  margin: 0.5
+  ego_half: [2.2, 1.0]
+  corridor_length: 200.0
+  width: 100
+  keep_per_bucket: 20
+
+action:
+  forced_s: 1.0           # = 2 discrete steps at dt=0.5
+  set:
+    - {id: U0, lateral: keep,  ax: -4.0}
+    - {id: U1, lateral: keep,  ax: -2.0}
+    - {id: U2, lateral: keep,  ax:  0.0}
+    - {id: U3, lateral: keep,  ax:  1.5}
+    - {id: U4, lateral: left,  ax: -4.0}
+    - {id: U5, lateral: left,  ax: -2.0}
+    - {id: U6, lateral: left,  ax:  0.0}
+    - {id: U7, lateral: left,  ax:  1.5}
+
+# coarse mechanism mapping (fine mechanism = F3 cell name)
+coarse_map:
+  cross: cross
+  lead: lead
+  block: block_or_occupancy
+  temp: block_or_occupancy
+
+# param_group_id = cell | v{ego_v} | family_key(spec) ; family_key bins the
+# cell's primary continuous geometry/timing variable (see common.py).
+param_group:
+  bin_width: 8
+
+gates:
+  discovery:
+    peq_min: 15
+    fine_pair_min: 3
+    coarse_combo_min: 2
+    bottom_frac: 0.10
+    g2_ratio: 0.60
+    g2_p: 0.01
+    g3_rho: 1.25
+    g4_ratio: 2.0
+    d0_match_tol: 0.02
+    speed_match_tol: 1.0
+    v_health_hi: 1.02
+  confirmatory:
+    peq_min: 10          # scaled 15 * 72/108 ; coverage NOT scaled
+    fine_pair_min: 3
+    coarse_combo_min: 2
+    bottom_frac: 0.10
+    g2_ratio: 0.60
+    g2_p: 0.01
+    g3_rho: 1.25
+    g4_ratio: 2.0
+    d0_match_tol: 0.02
+    speed_match_tol: 1.0
+    v_health_hi: 1.02
+
+two_step:
+  ratio: 0.70
+  p: 0.01
+  n_sequences_max: 64
+
+stats:
+  bootstrap: 10000
+  seed: 0

@@ -1,0 +1,20 @@
+{
+ "n_peq": 3,
+ "n_matched": 3,
+ "median_d1_peq": 0.0,
+ "median_d1_random_cross": 0.27001549999999996,
+ "g2_ratio_obs": 0.0,
+ "g2_pvalue": 0.0051,
+ "median_d1_matched": 0.02453,
+ "g3_rho": 0.0,
+ "median_d1_same_diff_top25": 0.671248,
+ "g4_ratio_obs": null,
+ "gates": {
+  "G0_engineering_health": true,
+  "G1_candidate_equivalence": false,
+  "G2_one_step_closure": true,
+  "G3_mechanism_no_extra_loss": true,
+  "G4_keeps_same_mech_diff": true
+ },
+ "overall_pass": false
+}

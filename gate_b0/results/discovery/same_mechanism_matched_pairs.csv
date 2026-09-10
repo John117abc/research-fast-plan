@@ -1,0 +1,4 @@
+state_i,state_j,coarse_i,coarse_j,fine_i,fine_j,group_i,group_j,same_coarse,same_fine,same_param_group,ego_speed_diff,d0_mean,d0_max,pair_id,matched_to,pair_type
+block_nec_r10,block_nec_r12,block_or_occupancy,block_or_occupancy,block_nec,block_nec,block_nec|v7|L6,block_nec|v6|L6,1,1,0,1.0,0.0,0.0,match__block_cont_r7__cross_stall_occ_r11,block_cont_r7__cross_stall_occ_r11,same_matched
+block_nec_r10,block_nec_r12,block_or_occupancy,block_or_occupancy,block_nec,block_nec,block_nec|v7|L6,block_nec|v6|L6,1,1,0,1.0,0.0,0.0,match__block_nec_r10__cross_stall_r1,block_nec_r10__cross_stall_r1,same_matched
+block_nec_r10,block_nec_r12,block_or_occupancy,block_or_occupancy,block_nec,block_nec,block_nec|v7|L6,block_nec|v6|L6,1,1,0,1.0,0.0,0.0,match__cross_stall_r11__temp_opt_r12,cross_stall_r11__temp_opt_r12,same_matched

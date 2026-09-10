@@ -1,0 +1,7 @@
+{
+ "G0_engineering_health": true,
+ "G1_candidate_equivalence": false,
+ "G2_one_step_closure": true,
+ "G3_mechanism_no_extra_loss": true,
+ "G4_keeps_same_mech_diff": true
+}
