@@ -85,6 +85,28 @@ window-overlap artifact: non-overlap d0(0.5-3s) vs d1(8-11s) rho=0.846, and
 successor-tail-only (abs 10-11s) rho=0.924. (D) matching is fair
 (|d0 diff| median 7e-5, 100% within 0.01). See `results/r3/audit/B0_R3_AUDIT.md`.
 
+## B0-C1 independent confirmatory experiment
+
+```bash
+conda run -n plant2 python -u gate_b0/confirmatory/gen_params.py     # 72 new rows
+conda run -n plant2 python -u gate_b0/scripts/22_c1_freeze.py        # freeze BEFORE CARLA
+# generate 72 (infra retry only): bash /tmp/opencode/b0c1_gen.sh
+conda run -n plant2 python -u gate_b0/scripts/23_c1_build.py         # health + R1 + 576 succ
+conda run -n plant2 python -u gate_b0/scripts/24_c1_pairs_closure.py
+conda run -n plant2 python -u gate_b0/scripts/25_c1_stats.py
+conda run -n plant2 python -u gate_b0/scripts/26_c1_report.py
+```
+
+72/72 generated (0 infra failures), health clean. Frozen R1/distance/actions/
+stats; hashes verified unchanged in `results/confirmatory/freeze/`.
+**C1-C4 all PASS**: Spearman(d0,D1)=0.948 (95% CI [0.928,0.964]); monotone
+Q1<...<Q5 (0.015->0.297); per-combo rho 0.93-0.97; cross/same matched ratio
+0.894. Audit A (non-overlap) rho=0.830; Audit B action-effect mean=0.187.
+=> **B0-C1 CONFIRMATORY PASS** (one-step behavioral consistency only; not a
+final Driving Relation, no generalization claim). See
+`results/confirmatory/B0_C1_result.md`.
+
+
 
 
 

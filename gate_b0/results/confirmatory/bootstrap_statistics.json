@@ -1,0 +1,39 @@
+{
+ "n_cross_pairs": 1728,
+ "n_matched": 1728,
+ "spearman_overall": 0.9478,
+ "spearman_CI": {
+  "median": 0.94746,
+  "lo95": 0.92773,
+  "hi95": 0.96442,
+  "n": 10000
+ },
+ "median_D1_Q1": 0.01515,
+ "median_D1_Q5": 0.29701,
+ "q1_minus_q5_CI": {
+  "median": -0.28177,
+  "lo95": -0.288,
+  "hi95": -0.27602,
+  "n": 10000
+ },
+ "median_D1_cross": 0.12965,
+ "median_D1_same_matched": 0.14499,
+ "cross_minus_same_CI": {
+  "median": -0.00653,
+  "lo95": -0.10058,
+  "hi95": 0.06188,
+  "n": 10000
+ },
+ "matched_ratio": 0.8942,
+ "feasibility_agree_mean": 1.0,
+ "nonoverlap_spearman": 0.8296,
+ "action_effect_mean": 0.1874,
+ "action_effect_min": 0.04092,
+ "conditions": {
+  "C1_continuous_rho>=0.60_and_CIlow>0.40": true,
+  "C2_Q1<=0.5*Q5": true,
+  "C3_two_of_three_mech_rho>0.50": true,
+  "C4_matched_ratio<=1.25": true
+ },
+ "overall_pass": true
+}
