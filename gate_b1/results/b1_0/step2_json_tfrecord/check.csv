@@ -1,0 +1,13 @@
+json_file,tfrecord,record_index,scenario_id_match,sdc_id_match,n_tracks_json,n_tracks_tf,n_frames_json,n_frames_tf,cur_idx_json_valid,cur_idx_tf_valid,ego_dx,ego_dy,ego_dheading,ego_dvx,ego_dvy,bbox_len_match,bbox_wid_match,n_lanes_json,n_lanes_tf,future_valid_tf
+tfrecord-00498-of-01000_319.json,training.tfrecord-00498-of-01000,319,True,True,33,33,91,91,True,True,0.0,0.0,0.0,0.0,0.0,0.0,0.0,276,276,81
+tfrecord-00241-of-01000_3.json,training.tfrecord-00241-of-01000,3,True,True,20,20,91,91,True,True,0.0,0.0,0.0,0.0,0.0,0.0,0.0,57,57,81
+tfrecord-00469-of-01000_183.json,training.tfrecord-00469-of-01000,183,True,True,45,45,91,91,True,True,0.0,0.0,0.0,0.0,0.0,0.0,0.0,474,474,81
+tfrecord-00133-of-01000_512.json,training.tfrecord-00133-of-01000,512,True,True,33,33,91,91,True,True,0.0,0.0,0.0,0.0,0.0,0.0,0.0,77,77,81
+tfrecord-00334-of-01000_197.json,training.tfrecord-00334-of-01000,197,True,True,31,31,91,91,True,True,0.0,0.0,0.0,0.0,0.0,0.0,0.0,51,51,81
+tfrecord-00451-of-01000_181.json,training.tfrecord-00451-of-01000,181,True,True,49,49,91,91,True,True,0.0,0.0,0.0,0.0,0.0,0.0,0.0,55,55,81
+tfrecord-00354-of-01000_261.json,training.tfrecord-00354-of-01000,261,True,True,25,25,91,91,True,True,0.0,0.0,0.0,0.0,0.0,0.0,0.0,75,75,81
+tfrecord-00372-of-01000_132.json,training.tfrecord-00372-of-01000,132,True,True,14,14,91,91,True,True,0.0,0.0,0.0,0.0,0.0,0.0,0.0,38,38,81
+tfrecord-00429-of-01000_202.json,training.tfrecord-00429-of-01000,202,True,True,53,53,91,91,True,True,0.0,0.0,0.0,0.0,0.0,0.0,0.0,129,129,81
+tfrecord-00390-of-01000_333.json,training.tfrecord-00390-of-01000,333,True,True,76,76,91,91,True,True,0.0,0.0,0.0,0.0,0.0,0.0,0.0,286,286,81
+tfrecord-00023-of-01000_307.json,training.tfrecord-00023-of-01000,307,True,True,98,98,91,91,True,True,0.0,0.0,0.0,0.0,0.0,0.0,0.0,112,112,81
+tfrecord-00321-of-01000_150.json,training.tfrecord-00321-of-01000,150,True,True,168,168,91,91,True,True,0.0,0.0,0.0,0.0,0.0,0.0,0.0,212,212,81

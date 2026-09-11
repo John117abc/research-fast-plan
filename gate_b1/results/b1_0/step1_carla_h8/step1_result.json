@@ -1,0 +1,53 @@
+{
+ "n_cross_pairs": 1728,
+ "n_same_pairs": 828,
+ "spearman_d8_d10": 0.9958,
+ "spearman_d0_d1_8s": 0.9525,
+ "spearman_CI": [
+  0.93407,
+  0.96786
+ ],
+ "median_D1_Q1": 0.01093,
+ "median_D1_Q5": 0.26909,
+ "matched_ratio": 0.9717,
+ "mechanism_rho": {
+  "cross|lead": 0.9706,
+  "block_or_occupancy|cross": 0.9344,
+  "block_or_occupancy|lead": 0.9519
+ },
+ "quantiles": [
+  {
+   "quantile": "Q1",
+   "n": 173,
+   "D1_median": 0.01093
+  },
+  {
+   "quantile": "Q2",
+   "n": 259,
+   "D1_median": 0.03061
+  },
+  {
+   "quantile": "Q3",
+   "n": 432,
+   "D1_median": 0.05496
+  },
+  {
+   "quantile": "Q4",
+   "n": 432,
+   "D1_median": 0.23658
+  },
+  {
+   "quantile": "Q5",
+   "n": 432,
+   "D1_median": 0.26909
+  }
+ ],
+ "conditions": {
+  "dist_rank_corr>=0.90": true,
+  "C1_rho>=0.60_CIlow>0.40": true,
+  "C2_Q1<=0.5*Q5": true,
+  "C3_two_of_three_mech_rho>0.50": true,
+  "C4_matched_ratio<=1.25": true
+ },
+ "STEP1_PASS": true
+}

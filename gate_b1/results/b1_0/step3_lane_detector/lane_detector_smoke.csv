@@ -1,0 +1,13 @@
+scenario_id,ego_lane_id,ego_lat,ego_head_diff_deg,ego_lane_has_conn,left_lane_id,left_lane_lat,lane_width,left_head_diff_deg,left_lane_has_conn,ok
+191ba5b871816b87,162,0.941,0.15,True,,,,,,False
+19a26ec24f038426,341,-0.756,6.0,True,,,,,,False
+20ea68bed2db1113,94,0.006,0.21,True,,,,,,False
+23753bc3b7a68c32,331,0.329,5.0,True,,,,,,False
+259a7e466448718b,104,-0.135,0.71,True,,,,,,False
+33afa7cc252ac898,917,0.162,0.37,True,,,,,,False
+518e0a83d3a7b0c2,135,0.0,0.62,True,,,,,,False
+61d6ed4c28274548,73,0.201,0.68,True,,,,,,False
+8c1863f5c52455a,114,0.373,1.65,True,,,,,,False
+93125e6936297df5,327,0.89,8.3,True,,,,,,False
+ba28f21ba487764b,335,0.0,1.14,True,,,,,,False
+de95771b95f36c6f,120,-0.205,2.89,True,,,,,,False

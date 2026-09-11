@@ -1,0 +1,149 @@
+[
+ {
+  "scenario_id": "191ba5b871816b87",
+  "n_lanes": 55,
+  "n_components": 7,
+  "largest_component": 40,
+  "top5_component_sizes": [
+   40,
+   4,
+   3,
+   3,
+   3
+  ]
+ },
+ {
+  "scenario_id": "19a26ec24f038426",
+  "n_lanes": 286,
+  "n_components": 19,
+  "largest_component": 256,
+  "top5_component_sizes": [
+   256,
+   13,
+   1,
+   1,
+   1
+  ]
+ },
+ {
+  "scenario_id": "20ea68bed2db1113",
+  "n_lanes": 51,
+  "n_components": 1,
+  "largest_component": 51,
+  "top5_component_sizes": [
+   51
+  ]
+ },
+ {
+  "scenario_id": "23753bc3b7a68c32",
+  "n_lanes": 112,
+  "n_components": 2,
+  "largest_component": 111,
+  "top5_component_sizes": [
+   111,
+   1
+  ]
+ },
+ {
+  "scenario_id": "259a7e466448718b",
+  "n_lanes": 77,
+  "n_components": 26,
+  "largest_component": 52,
+  "top5_component_sizes": [
+   52,
+   1,
+   1,
+   1,
+   1
+  ]
+ },
+ {
+  "scenario_id": "33afa7cc252ac898",
+  "n_lanes": 474,
+  "n_components": 34,
+  "largest_component": 415,
+  "top5_component_sizes": [
+   415,
+   13,
+   6,
+   5,
+   4
+  ]
+ },
+ {
+  "scenario_id": "518e0a83d3a7b0c2",
+  "n_lanes": 129,
+  "n_components": 4,
+  "largest_component": 126,
+  "top5_component_sizes": [
+   126,
+   1,
+   1,
+   1
+  ]
+ },
+ {
+  "scenario_id": "61d6ed4c28274548",
+  "n_lanes": 75,
+  "n_components": 17,
+  "largest_component": 59,
+  "top5_component_sizes": [
+   59,
+   1,
+   1,
+   1,
+   1
+  ]
+ },
+ {
+  "scenario_id": "8c1863f5c52455a",
+  "n_lanes": 38,
+  "n_components": 5,
+  "largest_component": 32,
+  "top5_component_sizes": [
+   32,
+   3,
+   1,
+   1,
+   1
+  ]
+ },
+ {
+  "scenario_id": "93125e6936297df5",
+  "n_lanes": 276,
+  "n_components": 15,
+  "largest_component": 216,
+  "top5_component_sizes": [
+   216,
+   11,
+   7,
+   7,
+   5
+  ]
+ },
+ {
+  "scenario_id": "ba28f21ba487764b",
+  "n_lanes": 212,
+  "n_components": 7,
+  "largest_component": 201,
+  "top5_component_sizes": [
+   201,
+   6,
+   1,
+   1,
+   1
+  ]
+ },
+ {
+  "scenario_id": "de95771b95f36c6f",
+  "n_lanes": 57,
+  "n_components": 4,
+  "largest_component": 33,
+  "top5_component_sizes": [
+   33,
+   22,
+   1,
+   1
+  ]
+ }
+]

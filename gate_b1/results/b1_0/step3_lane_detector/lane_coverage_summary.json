@@ -1,0 +1,9 @@
+{
+ "n_sampled": 500,
+ "reasons": {
+  "no_left_lane": 386,
+  "ok": 107,
+  "no_ego_lane": 7
+ },
+ "coverage": 0.214
+}

@@ -1,0 +1,4 @@
+json_training: 70172
+json_testing: 13723
+tfrecord_training: 500
+tfrecord_testing: 150
