@@ -214,24 +214,25 @@ def ego_state(canonical, idx=None):
             "length": f["length"], "width": f["width"], "idx": idx}
 
 
-def build_slots(canonical, ego, horizon_s=8.0, dt=0.5, lat_filter=4.0, exclude_ids=()):
+def build_slots(canonical, ego, horizon_s=8.0, dt=0.5, lat_filter=4.0,
+                exclude_ids=(), native_step=5):
     """Occupancy frames (dt grid) in ego frame: (s_abs, lat, hl, hw).
 
     s_abs is longitudinal distance from ego position along ego heading; lat is
     lateral (+left, Waymo convention). The frozen engine expects current corridor
     at lat 0 and left corridor at +W, so NO lateral mirror is applied here.
     exclude_ids removes the given actor ids (free baseline).
+    native_step = native frames per dt (10 Hz full canonical -> 5; compact -> 1).
     """
     idx0 = ego["idx"]
     hz = int(round(horizon_s / dt))
-    step = int(round(dt / 0.1))  # Waymo 10 Hz -> 0.5 s
     u = np.array([math.cos(ego["heading"]), math.sin(ego["heading"])])
     n = np.array([math.sin(ego["heading"]), -math.cos(ego["heading"])])
     ex = set(int(x) for x in exclude_ids)
     actors = [a for a in canonical["actors"] if a["id"] not in ex]
     slots = []
     for k in range(hz + 1):
-        fi = idx0 + k * step
+        fi = idx0 + k * native_step
         frame = []
         if fi < len(canonical["ego"]["frames"]):
             for a in actors:
@@ -243,24 +244,37 @@ def build_slots(canonical, ego, horizon_s=8.0, dt=0.5, lat_filter=4.0, exclude_i
                 lat = float(dxy @ n)
                 if abs(lat) > lat_filter + 4.0:
                     continue
-                frame.append((lon, lat, max(s["length"] / 2.0, 1.0),
-                              max(s["width"] / 2.0, 0.3)))
+                L = s.get("length", a.get("length", 4.5))
+                W = s.get("width", a.get("width", 1.8))
+                frame.append((lon, lat, max(L / 2.0, 1.0), max(W / 2.0, 0.3)))
         slots.append(frame)
     return slots
 
 
+def normalize_compact(c):
+    """Make a compact canonical compatible with the full adapter schema."""
+    tmap = {1: "vehicle", 2: "pedestrian", 3: "cyclist"}
+    c["current_time_index"] = 0
+    for a in [c["ego"]] + c["actors"]:
+        L = a.get("length", 4.5); W = a.get("width", 1.8)
+        for f in a["frames"]:
+            f.setdefault("length", L); f.setdefault("width", W)
+    for a in c["actors"]:
+        a["type"] = tmap.get(a.get("type", 1), "other")
+    return c
+
+
 def interaction_actor_ids(canonical, ego, lane_w, horizon_s=8.0, dt=0.5,
-                          margin=0.5, ego_half_w=1.0):
+                          margin=0.5, ego_half_w=1.0, native_step=5):
     """Actors whose swept bbox intersects the current/left corridor band."""
     idx0 = ego["idx"]
     hz = int(round(horizon_s / dt))
-    step = int(round(dt / 0.1))
     u = np.array([math.cos(ego["heading"]), math.sin(ego["heading"])])
     n = np.array([math.sin(ego["heading"]), -math.cos(ego["heading"])])
     ids = {}
     for a in canonical["actors"]:
         for k in range(hz + 1):
-            fi = idx0 + k * step
+            fi = idx0 + k * native_step
             if fi >= len(a["frames"]):
                 break
             s = a["frames"][fi]
@@ -268,7 +282,7 @@ def interaction_actor_ids(canonical, ego, lane_w, horizon_s=8.0, dt=0.5,
                 continue
             dxy = np.array([s["x"] - ego["x"], s["y"] - ego["y"]])
             lat = float(dxy @ n)
-            hw = max(s["width"] / 2.0, 0.3)
+            hw = max(s.get("width", a.get("width", 1.8)) / 2.0, 0.3)
             cur = abs(lat - 0.0) < hw + ego_half_w + margin
             left = abs(lat - lane_w) < hw + ego_half_w + margin
             if cur or left:
