@@ -52,11 +52,28 @@ def canonical(sc, prefix, index):
     lanes = []
     for mf in sc.map_features:
         if mf.WhichOneof("feature_data") == "lane":
+            lc = mf.lane
+            def seg(b):
+                return {"lane_start_index": int(b.lane_start_index),
+                        "lane_end_index": int(b.lane_end_index),
+                        "boundary_feature_id": int(b.boundary_feature_id),
+                        "boundary_type": int(b.boundary_type)}
+            def neigh(n):
+                return {"feature_id": int(n.feature_id),
+                        "self_start_index": int(n.self_start_index),
+                        "self_end_index": int(n.self_end_index),
+                        "neighbor_start_index": int(n.neighbor_start_index),
+                        "neighbor_end_index": int(n.neighbor_end_index),
+                        "boundaries": [seg(b) for b in n.boundaries]}
             lanes.append({"id": int(mf.id),
-                          "type": int(mf.lane.type),
-                          "polyline": [[float(p.x), float(p.y), float(p.z)] for p in mf.lane.polyline],
-                          "entry_lanes": list(mf.lane.entry_lanes),
-                          "exit_lanes": list(mf.lane.exit_lanes)})
+                          "type": int(lc.type),
+                          "polyline": [[float(p.x), float(p.y), float(p.z)] for p in lc.polyline],
+                          "entry_lanes": list(lc.entry_lanes),
+                          "exit_lanes": list(lc.exit_lanes),
+                          "left_boundaries": [seg(b) for b in lc.left_boundaries],
+                          "right_boundaries": [seg(b) for b in lc.right_boundaries],
+                          "left_neighbors": [neigh(n) for n in lc.left_neighbors],
+                          "right_neighbors": [neigh(n) for n in lc.right_neighbors]})
     def track(t):
         return {"id": int(t.id), "object_type": int(t.object_type),
                 "frames": [{"x": float(s.center_x), "y": float(s.center_y), "z": float(s.center_z),

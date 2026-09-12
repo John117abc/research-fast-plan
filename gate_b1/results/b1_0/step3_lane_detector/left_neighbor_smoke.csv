@@ -1,0 +1,73 @@
+scenario_id,exclude_reason,current_lane_id,i_sdc,n_candidates,candidate_reasons,left_lane_id,left_lateral,left_heading_diff_deg,coverage_ahead,self_range,neighbor_range,on_left,same_direction,ok
+11324c65396683c3,no_valid_left_neighbor,475,7,0,,,,,,,,,,False
+12da96118d6bbf7c,no_valid_left_neighbor,146,294,0,,,,,,,,,,False
+1838198fc7c5c316,no_valid_left_neighbor,112,83,0,,,,,,,,,,False
+191ba5b871816b87,no_valid_left_neighbor,165,119,0,,,,,,,,,,False
+1991f7f589476df4,no_valid_left_neighbor,347,13,2,ineligible;ineligible,,,,,,,,,False
+19a26ec24f038426,no_valid_left_neighbor,341,20,0,,,,,,,,,,False
+19e842da38d945ac,no_valid_left_neighbor,159,109,0,,,,,,,,,,False
+1bb8b8ff834d03db,no_valid_left_neighbor,85,81,0,,,,,,,,,,False
+1dd026aa25b33caa,no_valid_left_neighbor,249,57,0,,,,,,,,,,False
+1e0fd0d6a7cd5429,no_valid_left_neighbor,86,141,0,,,,,,,,,,False
+1f41e9f72150f4dd,no_valid_left_neighbor,420,32,0,,,,,,,,,,False
+20ea68bed2db1113,no_valid_left_neighbor,12,205,0,,,,,,,,,,False
+23753bc3b7a68c32,no_valid_left_neighbor,406,60,0,,,,,,,,,,False
+2471dc219b378049,,475,24,1,,448,3.089,0.13,7.5,"[0, 40]","[0, 40]",True,True,True
+24afa7defbe42809,no_valid_left_neighbor,431,63,0,,,,,,,,,,False
+259a7e466448718b,no_valid_left_neighbor,89,123,0,,,,,,,,,,False
+26d0efe382a528b3,no_valid_left_neighbor,433,6,2,ineligible;ineligible,,,,,,,,,False
+31335e22e103c9d3,no_valid_left_neighbor,56,58,0,,,,,,,,,,False
+33afa7cc252ac898,no_valid_left_neighbor,927,12,0,,,,,,,,,,False
+3ab9ccf0b31c4fa0,no_valid_left_neighbor,115,207,0,,,,,,,,,,False
+3f301ac561e90ff9,,176,336,2,,194,3.691,0.17,48.2,"[0, 432]","[0, 432]",True,True,True
+4374d3bb0431d9b2,,219,142,4,,218,3.415,0.04,4.2,"[17, 150]","[0, 133]",True,True,True
+4846c9514a1e15ea,no_valid_left_neighbor,120,133,0,,,,,,,,,,False
+518e0a83d3a7b0c2,no_valid_left_neighbor,208,10,0,,,,,,,,,,False
+57fafca12ae66463,no_valid_left_neighbor,90,172,0,,,,,,,,,,False
+58332266bab380ea,no_valid_left_neighbor,281,21,0,,,,,,,,,,False
+5d118cf177400903,no_valid_left_neighbor,301,48,0,,,,,,,,,,False
+61d6ed4c28274548,no_valid_left_neighbor,73,21,0,,,,,,,,,,False
+63b1e1c67513b20d,no_valid_left_neighbor,491,11,0,,,,,,,,,,False
+69d9aee794994a34,no_valid_left_neighbor,31,311,0,,,,,,,,,,False
+69e7f63cc0b5b3ce,no_valid_left_neighbor,47,16,2,ineligible;ineligible,,,,,,,,,False
+6b41ce0943751ca0,no_valid_left_neighbor,71,27,0,,,,,,,,,,False
+6e444ff69bee348e,no_valid_left_neighbor,119,97,0,,,,,,,,,,False
+6eb40889e3421f8c,no_valid_left_neighbor,42,32,0,,,,,,,,,,False
+714e7ee45b57f1b4,,255,168,1,,254,3.023,0.45,44.2,"[0, 257]","[0, 257]",True,True,True
+77d43b4486a22f61,no_valid_left_neighbor,190,94,0,,,,,,,,,,False
+82adcf8e5826182e,no_valid_left_neighbor,587,30,0,,,,,,,,,,False
+8786aaee0d240fb1,no_valid_left_neighbor,138,251,0,,,,,,,,,,False
+8aa779c0834b730e,no_valid_left_neighbor,73,38,0,,,,,,,,,,False
+8c1863f5c52455a,no_valid_left_neighbor,114,9,0,,,,,,,,,,False
+8cd3219875b7f1de,,709,190,2,,392,3.156,0.33,10.4,"[32, 211]","[0, 180]",True,True,True
+8f69fb15a6f732bb,no_valid_left_neighbor,120,220,0,,,,,,,,,,False
+93125e6936297df5,no_valid_left_neighbor,327,10,0,,,,,,,,,,False
+99b2a1962ba5491a,no_valid_left_neighbor,51,175,0,,,,,,,,,,False
+9e75817008f1712e,,333,43,3,,339,2.729,2.54,2.5,"[0, 48]","[109, 159]",True,True,True
+9e853d5d041e58e1,no_valid_left_neighbor,642,93,0,,,,,,,,,,False
+9fcd33e10d427847,no_valid_left_neighbor,197,20,0,,,,,,,,,,False
+a132a88fcc58cdf6,no_valid_left_neighbor,230,9,0,,,,,,,,,,False
+a47c32718b1a585f,,134,232,2,,135,3.915,0.9,22.4,"[151, 277]","[0, 125]",True,True,True
+ac5f3177d573240b,no_valid_left_neighbor,217,249,0,,,,,,,,,,False
+afc9cb3b77efb6d3,,115,135,1,,116,3.235,0.34,36.7,"[0, 209]","[0, 209]",True,True,True
+b0e30887822d3746,no_valid_left_neighbor,308,141,0,,,,,,,,,,False
+ba28f21ba487764b,no_valid_left_neighbor,262,6,0,,,,,,,,,,False
+bd773585ac5ca660,,200,38,2,,201,3.916,0.02,21.1,"[38, 80]","[0, 42]",True,True,True
+c206a41cf7609ff8,no_valid_left_neighbor,66,291,0,,,,,,,,,,False
+c21f6e6fc7579056,no_valid_left_neighbor,93,148,0,,,,,,,,,,False
+c59550e78ce9559,no_valid_left_neighbor,120,5,4,ineligible;ineligible;ineligible;ineligible,,,,,,,,,False
+c902e64ac43541b6,,202,52,1,,203,4.104,0.07,145.7,"[0, 346]","[0, 345]",True,True,True
+ced141fd9243dea,no_valid_left_neighbor,617,92,0,,,,,,,,,,False
+cefa4cf63a8085d8,no_valid_left_neighbor,145,185,0,,,,,,,,,,False
+d559bcf4ce0521a9,,361,87,1,,356,3.685,0.27,6.7,"[0, 101]","[1, 102]",True,True,True
+d5d22aaf325fa7f0,no_valid_left_neighbor,96,0,0,,,,,,,,,,False
+d63d85dfe330e25e,no_valid_left_neighbor,166,20,0,,,,,,,,,,False
+de95771b95f36c6f,no_valid_left_neighbor,120,108,0,,,,,,,,,,False
+e7fc2a4d738d607b,,268,78,1,,210,2.996,0.14,107.2,"[0, 295]","[0, 292]",True,True,True
+ed49560e6a51420c,no_valid_left_neighbor,196,3,0,,,,,,,,,,False
+ed82757d85c9cca7,no_valid_left_neighbor,219,26,0,,,,,,,,,,False
+f0114a250a824f3f,no_valid_left_neighbor,120,69,0,,,,,,,,,,False
+f561a5f773a63664,,108,12,3,,129,3.635,0.08,55.0,"[0, 122]","[0, 123]",True,True,True
+f83489c9d43a23a,no_valid_left_neighbor,524,61,0,,,,,,,,,,False
+f9d2d1a4255e4a6b,no_valid_left_neighbor,443,67,1,ineligible,,,,,,,,,False
+fcf2fb4ff43f3561,,446,325,2,,450,3.097,0.25,9.9,"[0, 344]","[0, 347]",True,True,True

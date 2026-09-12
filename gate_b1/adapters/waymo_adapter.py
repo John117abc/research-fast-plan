@@ -39,7 +39,7 @@ def project_point(px, py, poly):
         h = math.atan2(ab[1], ab[0])
         if best is None or d < best[3]:
             # signed lateral: left of segment direction is +
-            n = np.array([-math.sin(h), math.cos(h)])
+            n = np.array([math.sin(h), -math.cos(h)])  # Waymo-left
             lat = float(np.dot(p - proj, n))
             best = (s_accum + t * L, lat, h, d)
         s_accum += L
@@ -73,7 +73,7 @@ def find_left_lane(ego, ego_lane, lanes, horizon_s=8.0):
     ahead. Deterministic; returns None when no such lane exists.
     """
     u = np.array([math.cos(ego["heading"]), math.sin(ego["heading"])])
-    n = np.array([-math.sin(ego["heading"]), math.cos(ego["heading"])])
+    n = np.array([math.sin(ego["heading"]), -math.cos(ego["heading"])])
     et = ego_lane["lane"].get("type", 2)
     best = None
     for lane in lanes:
@@ -105,6 +105,80 @@ def find_left_lane(ego, ego_lane, lanes, horizon_s=8.0):
 
 def lane_width_from_pair(ego_lane, left_lane):
     return left_lane["lane_width"]
+
+
+def nearest_vertex_index(px, py, poly):
+    d2 = (poly[:, 0] - px) ** 2 + (poly[:, 1] - py) ** 2
+    return int(np.argmin(d2))
+
+
+def find_current_lane_official(ego, lanes):
+    """Current driving lane by geometric projection (no SDC->lane id mapping)."""
+    best = None
+    for lane in lanes:
+        if lane.get("type", 2) not in (1, 2):
+            continue
+        poly = polyline_np(lane)
+        if len(poly) < 2:
+            continue
+        i = nearest_vertex_index(ego["x"], ego["y"], poly)
+        s, lat, h, d = project_point(ego["x"], ego["y"], poly)
+        dh = abs(wrap(h - ego["heading"]))
+        if dh > math.radians(30) or abs(lat) > 2.5:
+            continue
+        boundary = 0 if 0 < i < len(poly) - 1 else 1
+        score = (boundary, abs(lat))
+        if best is None or score < best[0]:
+            best = (score, lane, i, lat, h)
+    if best is None:
+        return None
+    return {"lane": best[1], "i_sdc": best[2], "lat": best[3], "heading": best[4]}
+
+
+def official_left_neighbor(ego, cur_lane, i_sdc, lanes, min_lateral=1.0,
+                           max_head_deg=30.0, min_coverage=1.0):
+    """Official WOMD left_neighbors valid at the SDC index.
+
+    Eligible = in-range (self_start<=i_sdc<=self_end) AND truly on the left
+    (lateral >= min_lateral) AND same direction (heading diff < max_head_deg)
+    AND has future coverage (>= min_coverage m ahead). Returns (best, all_cands);
+    best is None when no eligible candidate exists. No shifted lane is used.
+    """
+    lane_by_id = {l["id"]: l for l in lanes}
+    u = np.array([math.cos(ego["heading"]), math.sin(ego["heading"])])
+    n = np.array([math.sin(ego["heading"]), -math.cos(ego["heading"])])
+    cands = []
+    for nb in cur_lane.get("left_neighbors", []):
+        c = {"feature_id": nb["feature_id"],
+             "self_range": [nb["self_start_index"], nb["self_end_index"]],
+             "neighbor_range": [nb["neighbor_start_index"], nb["neighbor_end_index"]],
+             "boundaries": nb.get("boundaries", []),
+             "in_range": bool(nb["self_start_index"] <= i_sdc <= nb["self_end_index"])}
+        nl = lane_by_id.get(nb["feature_id"])
+        if nl is None:
+            c.update({"reason": "neighbor_feature_missing", "eligible": False})
+            cands.append(c)
+            continue
+        seg = polyline_np(nl)[nb["neighbor_start_index"]:nb["neighbor_end_index"] + 1]
+        if len(seg) < 2:
+            c.update({"reason": "neighbor_segment_too_short", "eligible": False})
+            cands.append(c)
+            continue
+        _, lat, h, _ = project_point(ego["x"], ego["y"], seg)
+        dh = math.degrees(abs(wrap(h - ego["heading"])))
+        dxy = seg[:, :2] - np.array([ego["x"], ego["y"]])
+        cov = float((dxy @ u).max())
+        c.update({"lateral": float(lat), "heading_diff_deg": float(dh),
+                  "coverage_ahead": cov, "segment": seg,
+                  "on_left": bool(lat >= min_lateral),
+                  "same_direction": bool(dh < max_head_deg),
+                  "has_future": bool(cov >= min_coverage)})
+        c["eligible"] = bool(c["in_range"] and c["on_left"] and c["same_direction"] and c["has_future"])
+        cands.append(c)
+    valid = [c for c in cands if c["eligible"]]
+    best = sorted(valid, key=lambda c: (abs(c["lateral"]), c["heading_diff_deg"],
+                                        -c["coverage_ahead"]))[0] if valid else None
+    return best, cands
 
 
 def json_lanes(js):
@@ -140,24 +214,26 @@ def ego_state(canonical, idx=None):
             "length": f["length"], "width": f["width"], "idx": idx}
 
 
-def build_slots(canonical, ego, horizon_s=8.0, dt=0.5, lat_filter=4.0):
+def build_slots(canonical, ego, horizon_s=8.0, dt=0.5, lat_filter=4.0, exclude_ids=()):
     """Occupancy frames (dt grid) in ego frame: (s_abs, lat, hl, hw).
 
     s_abs is longitudinal distance from ego position along ego heading; lat is
-    lateral (+left). The frozen engine expects current corridor at lat 0 and
-    left corridor at +W, so NO lateral mirror is applied here.
+    lateral (+left, Waymo convention). The frozen engine expects current corridor
+    at lat 0 and left corridor at +W, so NO lateral mirror is applied here.
+    exclude_ids removes the given actor ids (free baseline).
     """
     idx0 = ego["idx"]
     hz = int(round(horizon_s / dt))
     step = int(round(dt / 0.1))  # Waymo 10 Hz -> 0.5 s
     u = np.array([math.cos(ego["heading"]), math.sin(ego["heading"])])
-    n = np.array([-math.sin(ego["heading"]), math.cos(ego["heading"])])
-    actors = [canonical["ego"]] + canonical["actors"]
+    n = np.array([math.sin(ego["heading"]), -math.cos(ego["heading"])])
+    ex = set(int(x) for x in exclude_ids)
+    actors = [a for a in canonical["actors"] if a["id"] not in ex]
     slots = []
     for k in range(hz + 1):
         fi = idx0 + k * step
         frame = []
-        if fi < len(actors[0]["frames"]):
+        if fi < len(canonical["ego"]["frames"]):
             for a in actors:
                 s = a["frames"][fi]
                 if not s["valid"]:
@@ -180,7 +256,7 @@ def interaction_actor_ids(canonical, ego, lane_w, horizon_s=8.0, dt=0.5,
     hz = int(round(horizon_s / dt))
     step = int(round(dt / 0.1))
     u = np.array([math.cos(ego["heading"]), math.sin(ego["heading"])])
-    n = np.array([-math.sin(ego["heading"]), math.cos(ego["heading"])])
+    n = np.array([math.sin(ego["heading"]), -math.cos(ego["heading"])])
     ids = {}
     for a in canonical["actors"]:
         for k in range(hz + 1):

@@ -1,0 +1,8 @@
+{
+ "n_states": 72,
+ "n_with_left_neighbor": 14,
+ "n_excluded": 58,
+ "coverage": 0.1944,
+ "n_left_or_direction_errors": 0,
+ "PASS": true
+}
