@@ -8,3 +8,6 @@ outputs/*
 # Gate F1/F3 large raw recordings
 **/run*.ndjson
 gate6/smoke/
+
+# P1 official dependency (do not commit)
+third_party/
