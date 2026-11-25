@@ -140,3 +140,93 @@ def encode82(st):
     out[63] = st[83]           # veh
     out[64:82] = st[65:83]     # extras 18
     return out
+
+
+# ===================== State v3（紧凑摘要，+16 维 → 100）=====================
+DIM_VRU = 5        # [最近距离/20, 相对速度/10, TTC/5, 是否在走廊, 数量/4]
+DIM_LIGHT = 4      # [红, 黄, 绿, 到灯距离/50]
+DIM_EGODYN = 3     # [steer_prev, a_lat/5, yaw_rate/2]
+DIM_CMD = 3        # [左, 直, 右]
+DIM_REMAIN = 1     # [剩余距离/200]
+TOTAL_DIM_V3 = TOTAL_DIM + DIM_VRU + DIM_LIGHT + DIM_EGODYN + DIM_CMD + DIM_REMAIN
+
+
+def vru_summary(pose, vrus, v_ego=0.0, horizon=40.0):
+    """行人/自行车摘要（canonical 系）。vrus: [{x, y, vx, vy}]"""
+    x, y, h = float(pose[0]), float(pose[1]), float(pose[2])
+    c, s = math.cos(-h), math.sin(-h)
+    out = np.zeros(DIM_VRU, np.float32)
+    best = None
+    cnt = 0
+    for p in vrus or []:
+        dx, dy = float(p['x']) - x, float(p['y']) - y
+        rx = dx * c - dy * s
+        ry = dx * s + dy * c
+        d = math.hypot(dx, dy)
+        if d > horizon:
+            continue
+        cnt += 1
+        if rx <= 0.5 or abs(ry) > CORRIDOR_HALF_W + 0.5:
+            continue
+        closing = -(float(p.get('vx', 0.0)) * dx + float(p.get('vy', 0.0)) * dy) / max(d, 1e-3) + float(v_ego)
+        ttc = d / max(closing, 0.5)
+        in_corr = 1.0 if abs(ry) <= CORRIDOR_HALF_W else 0.0
+        if best is None or d < best[0]:
+            best = (d, closing, ttc, in_corr)
+    if best is not None:
+        out[:] = [best[0] / 20.0, best[1] / 10.0, min(best[2], 50.0) / 5.0,
+                  best[3], min(cnt, 8) / 4.0]
+    else:
+        out[4] = min(cnt, 8) / 4.0
+    return out
+
+
+def light_features(dist, state):
+    """交通灯：dist 到最近相关灯（米），state ∈ {'red','yellow','green','off',None}"""
+    out = np.zeros(DIM_LIGHT, np.float32)
+    if state is None:
+        return out
+    s = str(state).lower()
+    out[0] = 1.0 if 'red' in s else 0.0
+    out[1] = 1.0 if 'yellow' in s else 0.0
+    out[2] = 1.0 if 'green' in s else 0.0
+    out[3] = float(min(max(dist or 0.0, 0.0), 50.0)) / 50.0
+    return out
+
+
+def ego_dyn_features(steer_prev=0.0, a_lat=0.0, yaw_rate=0.0):
+    return np.array([float(steer_prev), float(a_lat) / SCALE_A_LAT,
+                     float(yaw_rate) / 2.0], np.float32)
+
+
+def cmd_features(ego_heading, route_heading_at_preview):
+    """导航指令：左/直/右 one-hot（canonical：正角为左）"""
+    out = np.zeros(DIM_CMD, np.float32)
+    d = wrap(float(route_heading_at_preview) - float(ego_heading))
+    if d > 0.35:
+        out[0] = 1.0
+    elif d < -0.35:
+        out[2] = 1.0
+    else:
+        out[1] = 1.0
+    return out
+
+
+def build_state_v3(base84, vru=None, light=None, ego_dyn=None, cmd=None,
+                   remain=0.0):
+    """现有 84 维 + 16 维摘要 → 100 维"""
+    v = np.zeros(DIM_VRU, np.float32) if vru is None else np.asarray(vru, np.float32)
+    l = np.zeros(DIM_LIGHT, np.float32) if light is None else np.asarray(light, np.float32)
+    e = np.zeros(DIM_EGODYN, np.float32) if ego_dyn is None else np.asarray(ego_dyn, np.float32)
+    c = np.zeros(DIM_CMD, np.float32) if cmd is None else np.asarray(cmd, np.float32)
+    r = np.array([float(remain) / 200.0], np.float32)
+    st = np.concatenate([np.asarray(base84, np.float32), v, l, e, c, r])
+    assert st.shape[0] == TOTAL_DIM_V3, (st.shape, TOTAL_DIM_V3)
+    return st.astype(np.float32)
+
+
+def encode_v3(s):
+    """100 → 98（base 82 + 新 16）"""
+    s = np.asarray(s, np.float32)
+    base = encode82(s[..., :TOTAL_DIM])
+    return np.concatenate([base, s[..., TOTAL_DIM:TOTAL_DIM_V3]], -1).astype(np.float32)

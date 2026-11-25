@@ -28,6 +28,12 @@ for _p in _SRC_CANDIDATES:
 
 import importlib.util as _ilu
 
+_SRC_CANDIDATES = [
+    os.path.join(_REPO, 'src'),
+    _HERE,
+    '/home/jiangchengxuan/PycharmProjects/gpudrive/baselines/IDC-Bridge/src',
+]
+
 
 def _load_module(name, relpath):
     """按文件路径加载单个模块（避免经包 __init__ 连带导入 gpudrive 依赖）。"""
@@ -72,13 +78,23 @@ class IDCCarlaPolicy:
         win = int(getattr(cfg, 'window_size', WINDOW) or WINDOW)
         self.action_space = str(ck.get('action_space', 'delta_acc'))
         self.off_max = float(ck.get('off_max', 3.0))
-        print(f'[idc] action_space={self.action_space} off_max={self.off_max}',
-              flush=True)
+        _in = 0
+        try:
+            _in = int(ck['model_state_dict']['actor']
+                      ['input_proj.weight'].shape[1])
+        except Exception:
+            _in = 0
+        if not _in:
+            _in = int(ck.get('input_dim', 0) or 0) or 82
+        self.in_dim = _in
+        self.v3 = bool(_in > 82 or ck.get('state_v3', False))
+        print(f'[idc] action_space={self.action_space} off_max={self.off_max} '
+              f'v3={self.v3}', flush=True)
         self.actor = TransformerActor(
-            state_dim=82, d_model=d_model, nhead=nhead,
+            state_dim=self.in_dim, d_model=d_model, nhead=nhead,
             num_layers=layers, window_size=win, dropout=drop).to(self.dev).eval()
         print(f'[idc] actor: d_model={d_model} nhead={nhead} layers={layers} '
-              f'window={win}', flush=True)
+              f'window={win} in_dim={self.in_dim}', flush=True)
 
         # 容忍式加载（首层 64→82 时做列拷贝热启动）
         own = self.actor.state_dict()
@@ -115,7 +131,8 @@ class IDCCarlaPolicy:
 
     @torch.no_grad()
     def act(self, state84):
-        e = F.encode82(state84).astype(np.float32)
+        _s = np.asarray(state84, np.float32)
+        e = (F.encode_v3(_s) if _s.shape[-1] > 84 else F.encode82(_s)).astype(np.float32)
         self.win.append(e)
         w = np.tile(self.win[0], (WINDOW, 1)).astype(np.float32)
         w[-len(self.win):] = np.array(self.win)
@@ -148,7 +165,9 @@ def to_carla_control(delta_idc, acc, max_steer_deg=70.0,
 
 
 def make_state84(ego_pose_canon, speed, neighbors_canon, path, ref_idx=0,
-                 veh_len=4.9, a_lat=0.0, steer_prev=0.0):
+                 veh_len=4.9, a_lat=0.0, steer_prev=0.0,
+                 v3=False, vru=None, light=None, ego_dyn=None, cmd=None,
+                 remain=0.0):
     """CARLA 场景 → 84 维状态（输入必须是 canonical 坐标）。"""
     _nbr = [[float(q['x']), float(q['y']), float(q['h']), float(q['v'])]
             for q in neighbors_canon]
@@ -160,4 +179,7 @@ def make_state84(ego_pose_canon, speed, neighbors_canon, path, ref_idx=0,
     ]).astype(np.float32)
     st = np.concatenate([core66[:65], extras, core66[65:]]).astype(np.float32)
     assert st.shape[0] == 84, st.shape
+    if v3:
+        st = F.build_state_v3(st, vru=vru, light=light, ego_dyn=ego_dyn,
+                              cmd=cmd, remain=remain)
     return st, t
