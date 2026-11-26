@@ -150,6 +150,42 @@ class IDCController:
         VEC_REF_FROM=route 时：路径形状取自 route（长且平缓），
         规划器只贡献**横向偏移**——避免"短规划 → 曲率虚高 → 限速过低"。
         """
+        # ---- plan2：外推 + 样条（开关，默认 legacy）----
+        if os.environ.get('VEC_REF_MODE', 'legacy') == 'plan2':
+            try:
+                pp = S.build_path_ext(
+                    np.asarray(plan_ego, np.float64), pose_carla,
+                    target_len=float(os.environ.get('VEC_PLAN2_LEN', '28')),
+                    v_floor=float(os.environ.get('VEC_PLAN2_VFLOOR', '3.0')),
+                    v_max=float(os.environ.get('VEC_IDC_VMAX', '14')),
+                    a_lat=float(os.environ.get('VEC_IDC_ALAT', '2.0')))
+                pos = np.asarray(pp['pos'], np.float64)
+                hd = np.unwrap(np.asarray(pp['heading'], np.float64))
+                spd = np.asarray(pp['speed'], np.float32)
+                road = np.asarray(pp['road_dist'], np.float32)
+                pos_c = np.stack([pos[:, 0], -pos[:, 1]], 1)
+                hd_c = (-hd).astype(np.float32)
+                if self.tree is not None:
+                    try:
+                        _d, _ = self.tree.query(pos, k=1)
+                        road = np.minimum(np.asarray(_d, np.float32), 200.0)
+                    except Exception:
+                        pass
+                if getattr(self, '_plan2_n', 0) % 20 == 1:
+                    print('[PLAN2] len=%.1f kmax=%.3f v=[%.1f,%.1f] plan_v=%.2f'
+                          % (pp['path_len'], float(np.max(pp['curv_ahead'])),
+                             float(spd.min()), float(spd.max()),
+                             pp['plan_speed']), flush=True)
+                self._plan2_n = getattr(self, '_plan2_n', 0) + 1
+                return dict(pos=pos_c.astype(np.float32), heading=hd_c,
+                            speed=spd, road_dist=road,
+                            curv_ahead=pp['curv_ahead'],
+                            spd_ahead=pp['spd_ahead'],
+                            road_ahead=pp['road_ahead'],
+                            last_valid_idx=len(pos_c) - 1)
+            except Exception as _e:              # noqa: BLE001
+                print('[PLAN2] 失败 %s → 回退 legacy' % _e, flush=True)
+
         if (os.environ.get('VEC_REF_FROM', 'plan') == 'route'
                 and route_ego is not None):
             rw = self._route_world(route_ego, pose_carla)
@@ -205,9 +241,20 @@ class IDCController:
                     kap[i] = dth / ds
                 a_lat = float(os.environ.get('VEC_IDC_ALAT', '2.0'))
                 vmax = float(os.environ.get('VEC_IDC_VMAX', '20.0'))
-                vmin = float(os.environ.get('VEC_IDC_VMIN', '2.0'))
+                vmin = float(os.environ.get('VEC_IDC_VMIN', '0.0'))
                 spd = np.clip(np.sqrt(a_lat / np.maximum(kap, 1e-4)),
                               vmin, vmax).astype(np.float32)
+                try:
+                    if not hasattr(self, '_diag_n'):
+                        self._diag_n = 0
+                    self._diag_n += 1
+                    if self._diag_n % 10 == 1:
+                        _in_y = float(np.max(np.abs(np.asarray(plan_ego)[:, 1])))
+                        _out_y = float(np.max(np.abs(pos[:, 1])))
+                        print(f'[PATHDIAG] n={self._diag_n} plan_y={_in_y:+.2f} '
+                              f'path_y={_out_y:+.2f}', flush=True)
+                except Exception:
+                    pass
                 return dict(pos=pos_c.astype(np.float32), heading=hd_c,
                             speed=spd, road_dist=road,
                             curv_ahead=spd, spd_ahead=spd, road_ahead=road,
@@ -248,7 +295,7 @@ class IDCController:
             kap[i] = dth / ds
         a_lat = float(os.environ.get('VEC_IDC_ALAT', '2.0'))
         vmax = float(os.environ.get('VEC_IDC_VMAX', '20.0'))
-        vmin = float(os.environ.get('VEC_IDC_VMIN', '2.0'))
+        vmin = float(os.environ.get('VEC_IDC_VMIN', '0.0'))
         spd = np.clip(np.sqrt(a_lat / np.maximum(kap, 1e-4)), vmin, vmax).astype(np.float32)
         if self.tree is not None:
             try:
@@ -464,9 +511,86 @@ class IDCController:
                     off = -off_gain * d_prev * math.tan(float(delta))
                 if route_w is not None:
                     _path = PE.shift_path(route_w, off)
+                    # ---- TK-OFF2：直接改将被纯追踪消费的 _path ----
+                    try:
+                        _th = int(getattr(self, 'takeover_hold', 0) or 0)
+                        if _th > 0 and os.environ.get('VEC_TAKEOVER', '0') == '1':
+                            _off = float(np.clip(getattr(self, 'takeover_off', 0.0),
+                                                 -4.0, 4.0))
+                            # ---- v0.7 三段式：借出(2~14m) → 保持(14~26m) → 并回(26~38m) ----
+                            _P = np.asarray(route_w, np.float64)
+                            _dd = np.r_[0.0, np.cumsum(np.linalg.norm(np.diff(_P, axis=0), axis=1))]
+                            _j0 = int(np.argmin(np.linalg.norm(_P - np.array(wpos), axis=1)))
+                            _ds = _dd - _dd[_j0]
+                            _bar = getattr(self, 'takeover_bar', None)
+                            _b0, _b1 = (float(_bar[0]), float(_bar[1])) if _bar else (8.0, 16.0)
+                            _r0s = max(0.0, _b0 - 8.0)     # 借出起点
+                            _r1s = max(_r0s + 1.0, _b0)    # 到达满偏移
+                            _hs = _b1 + 2.0                # 保持结束
+                            _he = _hs + 10.0               # 并回结束
+                            _o = np.zeros(len(_P))
+                            for _i, _s in enumerate(_ds):
+                                if _r0s <= _s < _r1s:
+                                    _u = (_s - _r0s) / (_r1s - _r0s)
+                                    _o[_i] = _off * (3 * _u ** 2 - 2 * _u ** 3)
+                                elif _r1s <= _s < _hs:
+                                    _o[_i] = _off
+                                elif _hs <= _s < _he:
+                                    _u = (_s - _hs) / (_he - _hs)
+                                    _o[_i] = _off * (1 - (3 * _u ** 2 - 2 * _u ** 3))
+                            _path = PE.shift_path(_P, _o)
+                            self.takeover_hold = _th - 1
+                            if _th % 10 == 0:
+                                print('[TK-PROF] off=%+.2f 剩余=%d 剖面max=%.2f' % (
+                                    _off, _th, float(np.max(np.abs(_o)))), flush=True)
+                    except Exception as _e:              # noqa: BLE001
+                        print('[TK-OFF2] 失败 %s' % _e, flush=True)
+                    # ---- TK-PROFILE：借出→保持→并回 ----
+                    try:
+                        if (int(getattr(self, 'takeover_hold', 0) or 0) > 0
+                                and int(getattr(self, 'takeover_profile', 0) or 0) == 1
+                                and os.environ.get('VEC_TAKEOVER', '0') == '1'):
+                            _dy = float(np.clip(getattr(self, 'takeover_off', 0.0), -4.0, 4.0))
+                            _P = np.asarray(route_w, np.float64)
+                            _d = np.r_[0.0, np.cumsum(np.linalg.norm(np.diff(_P, axis=0), axis=1))]
+                            _j0 = int(np.argmin(np.linalg.norm(_P - np.array(wpos), axis=1)))
+                            _ds = _d - _d[_j0]
+                            _o = np.zeros(len(_P))
+                            for _i, _s in enumerate(_ds):
+                                if 2.0 <= _s < 14.0:
+                                    _u = (_s - 2.0) / 12.0
+                                    _o[_i] = _dy * (3 * _u ** 2 - 2 * _u ** 3)
+                                elif 14.0 <= _s < 26.0:
+                                    _o[_i] = _dy
+                                elif 26.0 <= _s < 38.0:
+                                    _u = (_s - 26.0) / 12.0
+                                    _o[_i] = _dy * (1 - (3 * _u ** 2 - 2 * _u ** 3))
+                            _path = PE.shift_path(_P, _o)
+                            self.takeover_hold = int(getattr(self, 'takeover_hold', 0)) - 1
+                            if self.takeover_hold % 10 == 0:
+                                print('[TK-PROF] max_off=%.2f 剩余=%d' % (
+                                    float(np.max(np.abs(_o))), self.takeover_hold), flush=True)
+                    except Exception as _e:              # noqa: BLE001
+                        print('[TK-PROF] 失败 %s' % _e, flush=True)
                     if os.environ.get('VEC_LAT_MODE', 'pp') == 'pp':
                         steer = self._pp.step(_path, float(speed), wpos, wh,
                                               dt=0.05 * self.every)
+                        try:
+                            if not hasattr(self, '_tkdbg_n'):
+                                self._tkdbg_n = 0
+                            self._tkdbg_n += 1
+                            if self._tkdbg_n % 4 == 1:
+                                _dp = np.asarray(_path, np.float64)
+                                _dr = np.asarray(route_w, np.float64)
+                                _j = int(np.argmin(
+                                    np.linalg.norm(_dr - np.array(wpos), axis=1)))
+                                _k = min(_j + 6, len(_dp) - 1, len(_dr) - 1)
+                                _toff = float(np.linalg.norm(_dp[_k] - _dr[_k]))
+                                print('[TK-DBG] n=%d off=%+.3f steer=%+.3f '
+                                      'tgt_dy=%.2f' % (self._tkdbg_n, off, steer,
+                                                       _toff), flush=True)
+                        except Exception as _e:              # noqa: BLE001
+                            print('[TK-DBG] 失败 %s' % _e, flush=True)
                     else:
                         steer = self._lat.step(_path, float(speed), wpos, wh)
                 else:
@@ -477,17 +601,30 @@ class IDCController:
                 _j1 = int(min(_i5 + 8, len(path['speed']) - 1))
                 _v_raw = float(np.min(path['speed'][_i5:_j1 + 1]))
                 if getattr(self.pol, 'action_space', 'delta_acc') == 'off_acc':
-                    # 2D 动作空间：加速度意图积分成速度指令（v_cmd += a·dt）
-                    _dt = 0.05 * self.every
-                    _vmin = float(os.environ.get('VEC_IDC_VMIN', '2.0'))
-                    _vc = float(getattr(self, '_v_cmd', None) or _vmin)
-                    _vc = float(np.clip(_vc + acc * _dt, _vmin, 20.0))
-                    self._v_cmd = _vc
-                    _v_raw = _vc
+                    # 2D 动作空间
+                    _vmin = float(os.environ.get('VEC_IDC_VMIN', '0.0'))
+                    if os.environ.get('VEC_IDC_LONG_REF', '1') == '1':
+                        # 参考速度 + acc 小幅修正（不积分，避免 acc≈0 时永远起步不了）
+                        _v_ref0 = float(_v_raw)
+                        _v_raw = float(np.clip(_v_ref0 + _vg * float(acc),
+                                               _vmin, 20.0))
+                    else:
+                        _dt = 0.05 * self.every
+                        _vc = float(getattr(self, '_v_cmd', None) or _vmin)
+                        _vc = float(np.clip(_vc + acc * _dt, _vmin, 20.0))
+                        self._v_cmd = _vc
+                        _v_raw = _vc
                 else:
-                    _v_raw = float(np.clip(_v_raw + _vg * float(acc), 2.0, 20.0))
+                    _v_raw = float(np.clip(_v_raw + _vg * float(acc), 0.0, 20.0))
                 _prev = getattr(self, '_v_tgt_prev', None)
-                v_tgt = _v_raw if _prev is None else 0.8 * _prev + 0.2 * _v_raw
+                _a = float(os.environ.get('VEC_VTGT_A', '0.9'))
+                v_tgt = _v_raw if _prev is None else _a * _prev + (1 - _a) * _v_raw
+                if _prev is not None:
+                    _dmax = float(os.environ.get('VEC_VTGT_DMAX', '0.8'))
+                    v_tgt = float(np.clip(v_tgt, _prev - _dmax, _prev + _dmax))
+                _cap = float(os.environ.get('VEC_V_CAP', '0') or 0)
+                if _cap > 0:
+                    v_tgt = min(v_tgt, _cap)
                 self._v_tgt_prev = v_tgt
                 thr, brk = self._lon.step(v_tgt, float(speed),
                                           dt=0.05 * self.every)

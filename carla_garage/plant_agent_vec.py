@@ -4,6 +4,7 @@
   ego 10 帧历史 / 周车(位置,朝向,速度,长宽) / 地图(我们导出的 npz) / route(leaderboard global plan)
 输出：8 点轨迹（ego 系，0.5 s）→ 置信度 argmax 选模态 → 三次样条密化 41 点 → 纯追踪 + 速度 P 控制
 """
+import math
 import os
 import occ_runtime as OCC
 import sys
@@ -616,6 +617,100 @@ class VecAgent(autonomous_agent.AutonomousAgent):
         near.sort()
         print(f'[TOPVIEW] {tag} 周围 actor: {near[:10]}', flush=True)
 
+    # ---------- 接管：判定参考是否可行 + 找一条可通行走廊 ----------
+    def _plan_collides(self, wp_ego, margin=0.25, ch=(2,)):
+        """自车系下，沿轨迹逐段放车身矩形，检查是否与 occ 指定通道相交"""
+        occ = getattr(self, '_last_occ_arr', None)
+        if occ is None:
+            return False
+        hl, hw = 2.446 + margin, 0.918 + margin
+        grid_x0, grid_y0, res = -8.0, -16.0, 0.5
+        nx, ny = occ.shape[1], occ.shape[2]
+        pts = np.asarray(wp_ego, np.float64)
+        for i in range(len(pts) - 1):
+            a, b = pts[i], pts[i + 1]
+            n = max(int(np.linalg.norm(b - a) / 0.5), 1)
+            for t in np.linspace(0, 1, n + 1):
+                p = a * (1 - t) + b * t
+                ang = math.atan2(b[1] - a[1], b[0] - a[0])
+                c, s_ = math.cos(ang), math.sin(ang)
+                cs = [(p[0] + dx * c - dy * s_, p[1] + dx * s_ + dy * c)
+                      for dx, dy in ((hl, hw), (hl, -hw), (-hl, -hw), (-hl, hw))]
+                rr = [(q[0] - grid_x0) / res for q in cs]
+                ccs = [(q[1] - grid_y0) / res for q in cs]
+                r0 = int(np.clip(np.floor(min(rr)), 0, nx - 1))
+                r1 = int(np.clip(np.ceil(max(rr)), 0, nx - 1))
+                c0 = int(np.clip(np.floor(min(ccs)), 0, ny - 1))
+                c1 = int(np.clip(np.ceil(max(ccs)), 0, ny - 1))
+                if occ[list(ch), r0:r1 + 1, c0:c1 + 1].any():
+                    return True
+        return False
+
+    def _corridor_offset(self, half_w=1.1, x_from=2.0, x_to=18.0):
+        """在自车系里找一条空闲走廊的横向偏移；找不到返回 None"""
+        occ = getattr(self, '_last_occ_arr', None)
+        if occ is None:
+            return None
+        res, gx0, gy0 = 0.5, -8.0, -16.0
+        nx, ny = occ.shape[1], occ.shape[2]
+        for dy in (3.5, 3.0, 2.5, -2.5, -3.0, -3.5):
+            ok = True
+            for xx in np.arange(x_from, x_to, 0.5):
+                for yy in np.arange(dy - half_w, dy + half_w + 1e-6, 0.4):
+                    r = int((xx - gx0) / res)
+                    c = int((yy - gy0) / res)
+                    if 0 <= r < nx and 0 <= c < ny and occ[2, r, c]:
+                        ok = False
+                        break
+                if not ok:
+                    break
+            if ok:
+                return dy
+        return None
+
+    def _takeover_escape(self, wp_ego):
+        """若参考穿障 → 返回换走廊后的 8 点轨迹；否则返回 None"""
+        if os.environ.get('VEC_TAKEOVER', '0') != '1':
+            return None
+        if not self._plan_collides(wp_ego):
+            return None
+        dy = self._corridor_offset()
+        if dy is None:
+            return None
+        # 构造换走廊轨迹：s ∈ [4, 32] m 取 8 点
+        out = []
+        for s in np.linspace(4.0, 32.0, 8):
+            u = min(max((s - 3.0) / 12.0, 0.0), 1.0)
+            y = dy * (3 * u ** 2 - 2 * u ** 3)
+            out.append((s, y))
+        self._takeover_used = True
+        # off 级接管：直接改 IDC 的横向偏移（真正进入转向）
+        try:
+            if self._idc is not None:
+                # 围挡纵向范围（自车系，静态通道）：剖面锚点
+                try:
+                    _occ = getattr(self, '_last_occ_arr', None)
+                    _prev = getattr(self._idc, 'takeover_bar', None)
+                    _x0, _x1 = (float(_prev[0]), float(_prev[1])) if _prev else (8.0, 16.0)
+                    if _occ is not None:
+                        _cells = np.argwhere(_occ[2, 20:60, 20:44])
+                        if len(_cells) > 0:
+                            _xs = (_cells[:, 0] + 20 + 0.5) * 0.5 - 8.0
+                            _ys = (_cells[:, 1] + 20 + 0.5) * 0.5 - 16.0
+                            _m = np.abs(_ys) < 2.5          # 只取车道内，排除路边
+                            if _m.any():
+                                _x0, _x1 = float(_xs[_m].min()), float(_xs[_m].max())
+                    self._idc.takeover_bar = (_x0, _x1)
+                except Exception:
+                    pass
+                self._idc.takeover_off = float(dy)
+                self._idc.takeover_hold = int(os.environ.get('VEC_TK_HOLD', '40'))
+                self._idc.takeover_profile = 1
+        except Exception:
+            pass
+        print(f'[TAKEOVER] 参考穿障 → 换走廊 dy={dy:+.1f} m', flush=True)
+        return np.array(out, np.float64)
+
     def _occ_tensor(self):
         """运行时占据栅格 → (1,3,64,64) float（与训练同口径）"""
         import numpy as _np
@@ -731,6 +826,21 @@ class VecAgent(autonomous_agent.AutonomousAgent):
             k = int(logits.argmax(1)[0])
             wp_all = pred[0].detach().cpu().numpy()
             wp = wp_all[k]
+        # ---- 接管检查（可选）----
+        try:
+            _esc = self._takeover_escape(np.asarray(wp, np.float64))
+            if _esc is not None:
+                wp = _esc
+        except Exception as _e:            # noqa: BLE001
+            print('[TAKEOVER] 失败', _e, flush=True)
+        # ---- 速度上限（三向对照用）----
+        try:
+            _cap = float(os.environ.get('VEC_V_CAP', '0') or 0)
+            if _cap > 0:
+                v_tgt = min(float(v_tgt), _cap)
+        except Exception:
+            pass
+
         # ---- 2 Hz 重规划 + 20 Hz 跟踪（计划存世界坐标，每帧转回 ego 系）----
         if self.step % REPLAN_EVERY == 0 or self._plan_world is None:
             x0, y0, h0, _ = pose
